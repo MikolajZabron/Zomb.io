@@ -1,19 +1,23 @@
 import sys
+from math import sqrt
 from random import randint
 
 
-from settings import *
-from graphical_object import Object
-from player import Player
+from utilities.settings import *
+from utilities.graphical_object import Object
+from player.player import Player
+from weapons.bullet_template import BulletTemplate
 from world import World
-from camera_group import CameraGroup
+from utilities.camera_group import CameraGroup
+from enemies.enemy_template import EnemyTemplate
+from weapons import bullet_template
 
 
 class Tree(Object):
     """Temporary class made for camera testing purposes"""
 
-    def __init__(self, position, group):
-        super().__init__(group)
+    def __init__(self, position, groups):
+        super().__init__(groups)
 
         # Setup
         self.image = pygame.image.load("images/tree_placeholder.png").convert_alpha()
@@ -37,16 +41,30 @@ class Zombio:
         # Flags
         self.running = True
 
+        self.all_sprites = pygame.sprite.Group()
+        self.structures = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
+        self.colliders = pygame.sprite.Group()
+
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE)
-        self.player = Player((0, 0), self.camera_group)
+        self.player = Player((0, 0), (self.all_sprites, self.camera_group))
+
+        self.last_shot_time = 0
 
         # Temporary Trees Drawing
         for i in range(50):
             random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
             random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
-            Tree((random_x, random_y), self.camera_group)
+            Tree((random_x, random_y), (self.all_sprites, self.structures, self.camera_group))
+
+        for j in range(5):
+            random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
+            random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
+            enemy = EnemyTemplate((random_x, random_y),
+                                  (self.all_sprites, self.enemies, self.camera_group))
 
     def start(self) -> None:
         """
@@ -75,13 +93,41 @@ class Zombio:
                 if event.key == pygame.K_q:
                     sys.exit()
 
+    def player_attack(self):  # Temporary
+        current_time = pygame.time.get_ticks() / 1000
+        time_since_last_shot = current_time - self.last_shot_time
+        if time_since_last_shot >= 1 / self.player.attack_speed:
+            bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy().rect.center,
+                                    (self.all_sprites, self.bullets, self.camera_group))
+            self.last_shot_time = current_time
+
+    def nearest_enemy(self):
+        closest_enemy = None
+        closest_distance = float('inf')
+
+        for enemy in self.enemies:
+            distance = sqrt(pow(enemy.rect.centerx - self.player.rect.centerx, 2)
+                            + pow(enemy.rect.centery - self.player.rect.centery, 2))
+
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_enemy = enemy
+
+        return closest_enemy
+
+    def collision(self):
+        for bullet in self.bullets:
+            bullet.collision(self.enemies, self.player.damage)
+
     def update_objects(self) -> None:  # Temporary different approach in future
         """
-        Method responsible for updating the position of all objects
-
+        Method responsible for updating the position of all
         :return: None
-        """
 
+        """
+        self.collision()
+        if self.nearest_enemy():
+            self.player_attack()
         self.player.update()
 
     def update_screen(self) -> None:
@@ -91,7 +137,6 @@ class Zombio:
         :return: None
         """
 
-        self.player.blit_player()
         self.camera_group.update()
         self.camera_group.custom_draw(self.player)
         pygame.display.update()

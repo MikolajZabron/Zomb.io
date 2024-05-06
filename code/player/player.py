@@ -1,18 +1,20 @@
-from settings import *
-from graphical_object import Object
+from utilities.settings import *
+from utilities.graphical_object import Object
 
 
 class Player(Object):
 
-    def __init__(self, position, group):
-        super().__init__(group)
+    def __init__(self, position, groups):
+        super().__init__(groups)
         self.image = PLAYER_IMAGE.convert_alpha()
-        self.image = pygame.transform.scale(self.image, (150, 75))
+        self.image = pygame.transform.scale(self.image, (200, 100))
         self.rect = self.image.get_rect(center=position)
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
 
         self.speed = PLAYER_SPEED
+        self.attack_speed = PLAYER_ATTACK_SPEED
+        self.damage = PLAYER_DAMAGE
 
     def input(self):
         keys = pygame.key.get_pressed()

@@ -1,4 +1,4 @@
-from settings import *
+from utilities.settings import *
 
 
 class World:
