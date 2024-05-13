@@ -67,7 +67,7 @@ class Zombio:
             random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
             enemy = RegularEnemy((self.all_sprites, self.enemies, self.camera_group),
                                  pygame.Vector2(random_x, random_y),
-                                 10, 10, 2)
+                                 5, 10, 2)
 
     def start(self) -> None:
         """

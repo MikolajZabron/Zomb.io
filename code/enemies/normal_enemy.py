@@ -9,10 +9,12 @@ class RegularEnemy(Enemy):
         super().__init__(groups, position, speed, health, attack_power, image)
 
     def move(self, player_pos: Vector2):
-        direction_vector = player_pos - self.position
-        direction_vector.normalize_ip()
-        direction_vector.scale_to_length(self.speed)
-        self.rect.move_ip(direction_vector)
+        dirvect = pygame.math.Vector2(player_pos.x - self.rect.x,
+                                      player_pos.y - self.rect.y)
+        dirvect.normalize()
+        # Move along this normalized vector towards the player at current speed.
+        dirvect.scale_to_length(self.speed)
+        self.rect.move_ip(dirvect)
 
     def check_collision(self, player):
         if pygame.sprite.collide_rect(self.rect, player.rect):
