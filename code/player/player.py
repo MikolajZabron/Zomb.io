@@ -12,6 +12,7 @@ class Player(Object):
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
 
+        self.health = 10
         self.speed = PLAYER_SPEED
         self.attack_speed = PLAYER_ATTACK_SPEED
         self.damage = PLAYER_DAMAGE
@@ -39,3 +40,7 @@ class Player(Object):
 
     def blit_player(self):
         self.screen.blit(self.image, self.rect)
+
+    def take_damage(self, amount):
+        self.health -= amount
+        print(self.health)

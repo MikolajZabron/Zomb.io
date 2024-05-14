@@ -2,6 +2,7 @@ import sys
 from math import sqrt
 from random import randint
 
+import pygame
 
 from utilities.settings import *
 from utilities.graphical_object import Object
@@ -9,9 +10,9 @@ from player.player import Player
 from weapons.bullet_template import BulletTemplate
 from world import World
 from utilities.camera_group import CameraGroup
+from enemies.normal_enemy import RegularEnemy
 from enemies.enemy_template import EnemyTemplate
 from weapons import bullet_template
-
 
 class Tree(Object):
     """Temporary class made for camera testing purposes"""
@@ -20,7 +21,7 @@ class Tree(Object):
         super().__init__(groups)
 
         # Setup
-        self.image = pygame.image.load("images/tree_placeholder.png").convert_alpha()
+        self.image = pygame.image.load("../images/tree_placeholder.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (100, 100))
         self.rect = self.image.get_rect(topleft=position)
 
@@ -63,8 +64,9 @@ class Zombio:
         for j in range(5):
             random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
             random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
-            enemy = EnemyTemplate((random_x, random_y),
-                                  (self.all_sprites, self.enemies, self.camera_group))
+            enemy = RegularEnemy((self.all_sprites, self.enemies, self.camera_group),
+                                 pygame.Vector2(random_x, random_y),
+                                 5, 10, 2)
 
     def start(self) -> None:
         """
@@ -126,6 +128,8 @@ class Zombio:
 
         """
         self.collision()
+        for enemy in self.enemies:
+            enemy.move(pygame.Vector2(self.player.rect.x, self.player.rect.y))
         if self.nearest_enemy():
             self.player_attack()
         self.player.update()
