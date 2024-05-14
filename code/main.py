@@ -14,7 +14,6 @@ from enemies.normal_enemy import RegularEnemy
 from enemies.enemy_template import EnemyTemplate
 from weapons import bullet_template
 
-
 class Tree(Object):
     """Temporary class made for camera testing purposes"""
 
