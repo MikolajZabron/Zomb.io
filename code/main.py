@@ -7,12 +7,15 @@ import pygame
 from utilities.settings import *
 from utilities.graphical_object import Object
 from player.player import Player
+from ui.health_bar import HealthBar
+from ui.exp_bar import ExperienceBar
 from weapons.bullet_template import BulletTemplate
 from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from enemies.enemy_template import EnemyTemplate
 from weapons import bullet_template
+
 
 class Tree(Object):
     """Temporary class made for camera testing purposes"""
@@ -35,7 +38,7 @@ class Zombio:
 
         # Setup
         pygame.init()
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # , pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)  # , pygame.FULLSCREEN
         pygame.display.set_caption('Zombio')
         self.clock = pygame.time.Clock()
 
@@ -52,6 +55,8 @@ class Zombio:
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE)
         self.player = Player((0, 0), (self.all_sprites, self.camera_group))
+        self.health_bar = HealthBar(self.player)
+        self.exp_bar = ExperienceBar(self.player)
 
         self.last_shot_time = 0
 
@@ -94,6 +99,10 @@ class Zombio:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     sys.exit()
+                if event.key == pygame.K_ESCAPE:
+                    self.player.take_damage(1)
+                if event.key == pygame.K_l:
+                    self.player.gain_experience(1)
 
     def player_attack(self):  # Temporary
         current_time = pygame.time.get_ticks() / 1000
@@ -133,6 +142,8 @@ class Zombio:
         if self.nearest_enemy():
             self.player_attack()
         self.player.update()
+        self.health_bar.update()
+        self.exp_bar.update()
 
     def update_screen(self) -> None:
         """
@@ -143,6 +154,8 @@ class Zombio:
 
         self.camera_group.update()
         self.camera_group.custom_draw(self.player)
+        self.health_bar.draw()
+        self.exp_bar.draw()
         pygame.display.update()
         self.clock.tick(60)
 
