@@ -43,8 +43,6 @@ class Zombio:
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.colliders = pygame.sprite.Group()
-        self.ground = pygame.sprite.Group()
-
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
