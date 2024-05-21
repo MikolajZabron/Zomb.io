@@ -1,6 +1,6 @@
 import sys
 from math import sqrt
-from random import randint
+import random
 
 import pygame
 
@@ -13,6 +13,7 @@ from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from weapons import bullet_template
+from ui.skill_box import SkillBox
 
 
 class Zombio:
@@ -30,12 +31,19 @@ class Zombio:
 
         # Flags
         self.running = True
+        self.freeze = False
+        self.left = False
+        self.mid = False
+        self.right = False
+        self.flag1 = True
+        self.flag2 = True
 
         self.all_sprites = pygame.sprite.Group()
         self.structures = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.colliders = pygame.sprite.Group()
+        self.skills = pygame.sprite.Group()
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
@@ -43,12 +51,15 @@ class Zombio:
         self.player = Player((0, 0), (self.all_sprites, self.camera_group))
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
+        self.skill_boxes = []
 
         self.last_shot_time = 0
+        self.selected_skill_index = 1
+        self.skill_list = []
 
         for j in range(5):
-            random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
-            random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
+            random_x = random.randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
+            random_y = random.randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
             enemy = RegularEnemy((self.all_sprites, self.enemies, self.camera_group),
                                  pygame.Vector2(random_x, random_y),
                                  3, 10, 2)
@@ -62,9 +73,13 @@ class Zombio:
 
         while self.running:
             self.check_event()
-            self.current_world.start()
-            self.update_objects()
-            self.update_screen()
+            if not self.freeze:
+                self.current_world.start()
+                self.update_objects()
+                self.update_screen()
+            elif self.freeze:
+                self.freeze_update()
+                self.skill_pick()
 
     def check_event(self) -> None:
         """
@@ -82,7 +97,25 @@ class Zombio:
                 if event.key == pygame.K_ESCAPE:
                     self.player.take_damage(1)
                 if event.key == pygame.K_l:
-                    self.player.gain_experience(1)
+                    self.player.gain_experience(10)
+                if self.freeze:
+                    if event.key == pygame.K_a:
+                        for skill in self.skills:
+                            skill.selected = False
+                        self.selected_skill_index = (self.selected_skill_index - 1) % len(self.skill_list)
+                        self.skills.sprites()[self.selected_skill_index].selected = True
+                    elif event.key == pygame.K_d:
+                        for skill in self.skills:
+                            skill.selected = False
+                        self.selected_skill_index = (self.selected_skill_index + 1) % len(self.skill_list)
+                        self.skills.sprites()[self.selected_skill_index].selected = True
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_skill_index == 0:
+                            self.left = True
+                        if self.selected_skill_index == 1:
+                            self.mid = True
+                        elif self.selected_skill_index == 2:
+                            self.right = True
 
     def player_attack(self):  # Temporary
         current_time = pygame.time.get_ticks() / 1000
@@ -91,6 +124,61 @@ class Zombio:
             bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy().rect.center,
                                     (self.all_sprites, self.bullets, self.camera_group))
             self.last_shot_time = current_time
+
+    def player_level_up(self):
+        if self.player.target_exp >= self.player.exp_need:
+            self.player.level_up()
+            self.freeze = True
+            self.skill_draw()
+
+    def skill_draw(self):
+
+        while self.flag1:
+            self.skill_list = []
+            while len(self.skill_list) < 3:
+                skill = self.skill_lottery()
+                if skill not in self.skill_list:
+                    self.skill_list.append(skill)
+
+            left = SkillBox((SCREEN_WIDTH / 2 - 300, -500), self.skill_list[0], False)
+            self.skills.add(left)
+            mid = SkillBox((SCREEN_WIDTH / 2, -700), self.skill_list[1], True)
+            self.skills.add(mid)
+            right = SkillBox((SCREEN_WIDTH / 2 + 300, -900), self.skill_list[2], False)
+            self.skills.add(right)
+
+            self.flag1 = False
+
+        self.skill_pick()
+
+    def skill_pick(self):
+        if self.left:
+            self.left = False
+            self.skills.sprites()[0].selected = True
+            self.player.skill_choice(self.skill_list[0])
+            self.skills.empty()
+            self.freeze = False
+        if self.mid:
+            self.mid = False
+            self.skills.sprites()[1].selected = True
+            self.player.skill_choice(self.skill_list[1])
+            self.skills.empty()
+            self.freeze = False
+        if self.right:
+            self.right = False
+            self.skills.sprites()[2].selected = True
+            self.player.skill_choice(self.skill_list[2])
+            self.skills.empty()
+            self.freeze = False
+
+    def skill_lottery(self):
+        i = random.randint(1, 3)
+        if i == 1:
+            return "adbuff"
+        elif i == 2:
+            return "new_weapon"
+        elif i == 3:
+            return "hp_max"
 
     def nearest_enemy(self):
         closest_enemy = None
@@ -108,7 +196,7 @@ class Zombio:
 
     def collision(self):
         for bullet in self.bullets:
-            bullet.collision(self.enemies, self.player.damage)
+            bullet.collision(self.enemies, self.player.damage, self.player)
 
     def update_objects(self) -> None:  # Temporary different approach in future
         """
@@ -121,6 +209,7 @@ class Zombio:
             enemy.move(pygame.Vector2(self.player.rect.x, self.player.rect.y))
         if self.nearest_enemy():
             self.player_attack()
+        self.player_level_up()
         self.player.update()
         self.health_bar.update()
         self.exp_bar.update()
@@ -136,6 +225,14 @@ class Zombio:
         self.camera_group.custom_draw(self.player)
         self.health_bar.draw()
         self.exp_bar.draw()
+
+        pygame.display.update()
+        self.clock.tick(60)
+
+    def freeze_update(self):
+        self.camera_group.custom_draw(self.player)
+        for skill_box in self.skills.sprites():
+            skill_box.draw()
         pygame.display.update()
         self.clock.tick(60)
 

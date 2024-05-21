@@ -13,9 +13,9 @@ class BulletTemplate(Object):
         self.direction = pygame.math.Vector2()
         self.speed = BULLET_SPEED
 
-    def collision(self, group, damage):
+    def collision(self, group, damage, player):
         for enemy in pygame.sprite.spritecollide(self, group, False):
-            enemy.take_damage(damage)
+            enemy.take_damage(damage, player)
             self.kill()
 
     def update(self):  # temporary to change

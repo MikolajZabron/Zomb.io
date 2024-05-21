@@ -7,7 +7,7 @@ class HealthBar(UserInterfaceElement):
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
-        self.transition_speed = BAR_TRANSITION_SPEED
+        self.transition_speed = BAR_TRANSITION_SPEED / 5
         self.screen = pygame.display.get_surface()
 
     def update(self):
