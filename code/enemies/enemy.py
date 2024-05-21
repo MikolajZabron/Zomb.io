@@ -18,6 +18,7 @@ class Enemy(Object):
         self.health: int = health
         self.speed: int = speed
         self.attack_power: int = attack_power
+        self.exp: int = 10
 
         self.movement_direction: pygame.math.Vector2 = pygame.math.Vector2()
 
@@ -39,7 +40,8 @@ class Enemy(Object):
     def check_collision(self, player, structures):
         pass
 
-    def take_damage(self, amount):
+    def take_damage(self, amount, player):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+            player.gain_experience(self.exp)
