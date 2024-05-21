@@ -9,7 +9,7 @@ class Enemy(Object):
         self.position: Vector2 = position
         self.screen = pygame.display.get_surface()
         self.image = image
-        self.image = pygame.transform.scale(self.image, (60, 100))
+        self.image = pygame.transform.scale(self.image, (128, 128))
         self.rect = self.image.get_rect(center=position)
 
         # Basic Statistics

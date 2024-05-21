@@ -7,7 +7,7 @@ class Player(Object):
     def __init__(self, position, groups):
         super().__init__(groups)
         self.image = PLAYER_IMAGE.convert_alpha()
-        #  self.image = pygame.transform.scale(self.image, (100, 60))
+        self.image = pygame.transform.scale(self.image, (128, 128))
         self.rect = self.image.get_rect(center=position)
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()

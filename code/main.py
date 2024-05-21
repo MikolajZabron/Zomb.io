@@ -5,7 +5,6 @@ from random import randint
 import pygame
 
 from utilities.settings import *
-from utilities.graphical_object import Object
 from player.player import Player
 from ui.health_bar import HealthBar
 from ui.exp_bar import ExperienceBar
@@ -13,20 +12,7 @@ from weapons.bullet_template import BulletTemplate
 from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
-from enemies.enemy_template import EnemyTemplate
 from weapons import bullet_template
-
-
-class Tree(Object):
-    """Temporary class made for camera testing purposes"""
-
-    def __init__(self, position, groups):
-        super().__init__(groups)
-
-        # Setup
-        self.image = pygame.image.load("../images/tree_placeholder.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (100, 100))
-        self.rect = self.image.get_rect(topleft=position)
 
 
 class Zombio:
@@ -38,7 +24,7 @@ class Zombio:
 
         # Setup
         pygame.init()
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)  # , pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # , pygame.FULLSCREEN
         pygame.display.set_caption('Zombio')
         self.clock = pygame.time.Clock()
 
@@ -60,18 +46,12 @@ class Zombio:
 
         self.last_shot_time = 0
 
-        # Temporary Trees Drawing
-        for i in range(50):
-            random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
-            random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
-            Tree((random_x, random_y), (self.all_sprites, self.structures, self.camera_group))
-
         for j in range(5):
             random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
             random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
             enemy = RegularEnemy((self.all_sprites, self.enemies, self.camera_group),
                                  pygame.Vector2(random_x, random_y),
-                                 5, 10, 2)
+                                 3, 10, 2)
 
     def start(self) -> None:
         """
