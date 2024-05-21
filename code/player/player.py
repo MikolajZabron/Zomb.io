@@ -12,10 +12,10 @@ class Player(Object):
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
 
-        self.health = 10
         self.exp = PLAYER_EXPERIENCE
         self.target_exp = PLAYER_EXPERIENCE
         self.exp_need = PLAYER_EXPERIENCE_NEED
+        self.level = PLAYER_LEVEL
 
         # Statistics
         self.speed = PLAYER_SPEED
@@ -58,5 +58,14 @@ class Player(Object):
     def gain_experience(self, amount):
         self.target_exp += amount
 
-    def blit_player(self):
+    def level_up(self):
+        self.exp -= self.exp_need
+        self.target_exp = self.exp
+        self.level += 1
+        self.exp_need *= 1.2
+
+    def skill_choice(self, i):
+        print(i)
+
+    def draw(self):
         self.screen.blit(self.image, self.rect)

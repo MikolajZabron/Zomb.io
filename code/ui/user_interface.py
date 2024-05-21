@@ -1,6 +1,7 @@
 """TEMPLATE USER INTERFACE ELEMENT"""
+from pygame.sprite import Sprite
 
 
-class UserInterfaceElement:
+class UserInterfaceElement(Sprite):
     def __init__(self):
-        pass
+        super().__init__()

@@ -16,6 +16,7 @@ class Enemy(Object):
         self.health: int = health
         self.speed: int = speed
         self.attack_power: int = attack_power
+        self.exp: int = 10
 
     def update(self):
         pass
@@ -32,7 +33,8 @@ class Enemy(Object):
     def check_collision(self, player):
         pass
 
-    def take_damage(self, amount):
+    def take_damage(self, amount, player):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+            player.gain_experience(self.exp)

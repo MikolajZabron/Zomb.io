@@ -11,8 +11,9 @@ ANIMATION_SPEED = 6
 
 # Player Settings
 PLAYER_IMAGE = pygame.image.load(join('images', 'character_new_version.png'))
-PLAYER_EXPERIENCE = 100
+PLAYER_EXPERIENCE = 0
 PLAYER_EXPERIENCE_NEED = 100
+PLAYER_LEVEL = 1
 PLAYER_SPEED = 2
 PLAYER_ATTACK_SPEED = 1
 PLAYER_DAMAGE = 5
@@ -34,4 +35,7 @@ BULLET_TEMPLATE_IMAGE = pygame.image.load(join('images', 'bullet_template.png'))
 BULLET_SPEED = 10
 
 # UI Bar's settings
-BAR_TRANSITION_SPEED = 0.1
+BAR_TRANSITION_SPEED = 0.5
+
+# UI Skillbox settings
+SKILLBOX_TRANSITION_SPEED = 10
