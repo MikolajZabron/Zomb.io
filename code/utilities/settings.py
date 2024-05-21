@@ -39,3 +39,6 @@ BAR_TRANSITION_SPEED = 0.5
 
 # UI Skillbox settings
 SKILLBOX_TRANSITION_SPEED = 10
+
+# UI Graphic settings
+UI_GRAPHIC = pygame.image.load(join('images', 'UIZombie.png'))

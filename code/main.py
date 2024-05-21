@@ -12,6 +12,7 @@ from weapons.bullet_template import BulletTemplate
 from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
+from ui.ui_graphic import UIGraphic
 from weapons import bullet_template
 from ui.skill_box import SkillBox
 
@@ -51,6 +52,7 @@ class Zombio:
         self.player = Player((0, 0), (self.all_sprites, self.camera_group))
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
+        self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
         self.skill_boxes = []
 
         self.last_shot_time = 0
@@ -225,6 +227,7 @@ class Zombio:
         self.camera_group.custom_draw(self.player)
         self.health_bar.draw()
         self.exp_bar.draw()
+        self.ui_graphic.draw()
 
         pygame.display.update()
         self.clock.tick(60)
