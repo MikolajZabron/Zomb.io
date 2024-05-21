@@ -1,3 +1,5 @@
+import pygame
+
 from utilities.graphical_object import Object
 from pygame.math import Vector2
 from utilities.settings import *
@@ -17,19 +19,24 @@ class Enemy(Object):
         self.speed: int = speed
         self.attack_power: int = attack_power
 
+        self.movement_direction: pygame.math.Vector2 = pygame.math.Vector2()
+
     def update(self):
         pass
 
     def draw(self):
         pass
 
-    def move(self, player_pos: Vector2):
+    def calculate_movement(self, player_pos: Vector2):
+        pass
+
+    def movement(self):
         pass
 
     def damage_player(self):
         pass
 
-    def check_collision(self, player):
+    def check_collision(self, player, structures):
         pass
 
     def take_damage(self, amount):

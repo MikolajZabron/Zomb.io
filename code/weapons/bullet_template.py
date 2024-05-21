@@ -21,8 +21,9 @@ class BulletTemplate(Object):
     def update(self):  # temporary to change
         direction = pygame.math.Vector2(self.destination[0] - self.rect.centerx,
                                         self.destination[1] - self.rect.centery)
-        direction.normalize_ip()
-        self.rect.move_ip(direction * self.speed)
+        if direction.length() > 0:
+            direction.normalize_ip()
+            self.rect.move_ip(direction * self.speed)
 
         if (direction.x > 0 and self.rect.centerx >= self.destination[0]) or \
                 (direction.x < 0 and self.rect.centerx <= self.destination[0]) or \

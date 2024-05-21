@@ -3,6 +3,7 @@ from math import sqrt
 from random import randint
 
 import pygame
+from pytmx import TiledTileLayer
 
 from utilities.settings import *
 from player.player import Player
@@ -13,6 +14,10 @@ from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from weapons import bullet_template
+from pytmx.util_pygame import load_pygame
+from structures.structure import Structure
+
+
 
 
 class Zombio:
@@ -31,11 +36,15 @@ class Zombio:
         # Flags
         self.running = True
 
+        tmx_data = load_pygame("Map/data/mapa/map.tmx")
+
         self.all_sprites = pygame.sprite.Group()
         self.structures = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.colliders = pygame.sprite.Group()
+        self.ground = pygame.sprite.Group()
+
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
@@ -43,6 +52,12 @@ class Zombio:
         self.player = Player((0, 0), (self.all_sprites, self.camera_group))
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
+
+        for layer in tmx_data.visible_layers:
+            if layer.name == "Structures" and isinstance(layer, TiledTileLayer):
+                for x, y, surf in layer.tiles():
+                    pos = (x * tmx_data.tilewidth, y * tmx_data.tileheight)
+                    Structure(pos, surf, (self.camera_group, self.structures))
 
         self.last_shot_time = 0
 
@@ -118,10 +133,13 @@ class Zombio:
         """
         self.collision()
         for enemy in self.enemies:
-            enemy.move(pygame.Vector2(self.player.rect.x, self.player.rect.y))
+            enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
+            enemy.check_collision(self.player, self.structures)
+            enemy.movement()
         if self.nearest_enemy():
             self.player_attack()
         self.player.update()
+        self.player.check_collision(self.structures)
         self.health_bar.update()
         self.exp_bar.update()
 

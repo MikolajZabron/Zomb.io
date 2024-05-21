@@ -9,6 +9,7 @@ class Player(Object):
         self.image = PLAYER_IMAGE.convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
         self.rect = self.image.get_rect(center=position)
+        self.prev_rect = self.rect.copy()
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
 
@@ -45,8 +46,8 @@ class Player(Object):
             self.direction.x = 0
 
     def update(self):
-
         self.input()
+        self.prev_rect = self.rect.copy()  # Store the previous position
         self.rect.center += self.direction * self.speed
 
     def take_damage(self, amount):
@@ -54,6 +55,9 @@ class Player(Object):
             self.target_health -= amount
         if self.target_health <= 0:
             self.target_health = 0
+
+    def check_collision(self, group):
+        collisions = pygame.sprite.spritecollide(self, group, False)
 
     def gain_experience(self, amount):
         self.target_exp += amount
