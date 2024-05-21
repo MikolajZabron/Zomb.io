@@ -17,8 +17,8 @@ class ExperienceBar(UserInterfaceElement):
         if self.player.exp > self.player.target_exp:
             self.player.exp -= self.transition_speed
 
-        self.exp_ratio = (SCREEN_WIDTH - SCREEN_WIDTH / 8 - 6) / self.player.exp_need
+        self.exp_ratio = (SCREEN_WIDTH - SCREEN_WIDTH / 8 - 225) / self.player.exp_need
 
     def draw(self):
-        pygame.draw.rect(self.screen, (0, 255, 0), (SCREEN_WIDTH / 8 + 4,
-                                                    SCREEN_HEIGHT - 32, self.player.exp * self.exp_ratio, 30))
+        pygame.draw.rect(self.screen, (0, 255, 0), (SCREEN_WIDTH / 8 + 110,
+                                                    SCREEN_HEIGHT - 100, self.player.exp * self.exp_ratio, 70))

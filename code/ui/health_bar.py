@@ -17,14 +17,27 @@ class HealthBar(UserInterfaceElement):
             self.player.health -= self.transition_speed
 
     def draw(self):
-        # Constants
-        bar_size = SCREEN_WIDTH / 8
+
+        """
+        bar_size = 100
         max_health = self.player.health_max
         current_health = self.player.health
 
         health_height = (current_health / max_health) * bar_size
 
         pygame.draw.rect(self.screen, (255, 0, 0),
-                         (2, SCREEN_HEIGHT - bar_size - 2 + (bar_size - health_height),
-                          bar_size, health_height))
+                         (120, 826,
+                          120, 82))"""
 
+        bar_width = 120
+        bar_height = 84
+        bar_x = 120
+        bar_y = 826
+        max_health = self.player.health_max
+        current_health = self.player.health
+
+        health_ratio = current_health / max_health
+        filled_bar_height = health_ratio * bar_height
+
+        pygame.draw.rect(self.screen, (32, 32, 32), (bar_x, bar_y, bar_width, bar_height))
+        pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y + (bar_height - filled_bar_height), bar_width, filled_bar_height))
