@@ -5,6 +5,7 @@ import random
 import pygame
 from pytmx import TiledTileLayer
 
+from weapons.melee import Melee
 from utilities.settings import *
 from player.player import Player
 from ui.health_bar import HealthBar
@@ -14,7 +15,6 @@ from world import World
 from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from ui.ui_graphic import UIGraphic
-from weapons import bullet_template
 from ui.skill_box import SkillBox
 
 
@@ -135,13 +135,23 @@ class Zombio:
                         elif self.selected_skill_index == 2:
                             self.right = True
 
-    def player_attack(self):  # Temporary
+    def player_range_attack(self):  # Temporary
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_shot = current_time - self.last_shot_time
         if time_since_last_shot >= 1 / self.player.attack_speed:
-            bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy().rect.center,
+            bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy()[0].rect.center,
                                     (self.all_sprites, self.bullets, self.camera_group))
             self.last_shot_time = current_time
+
+    def player_melee_attack(self, whom):
+        current_time = pygame.time.get_ticks() / 1000
+        time_since_last_shot = current_time - self.last_shot_time
+        if time_since_last_shot >= 1 / self.player.attack_speed:
+            melee = Melee(self.player.rect.center, self.camera_group)
+            self.last_shot_time = current_time
+            if not melee.dealt_damage:
+                whom.take_damage(self.player.damage, self.player)
+            melee.deal_damage()
 
     def player_level_up(self):
         if self.player.target_exp >= self.player.exp_need:
@@ -210,7 +220,7 @@ class Zombio:
                 closest_distance = distance
                 closest_enemy = enemy
 
-        return closest_enemy
+        return closest_enemy, closest_distance
 
     def collision(self):
         for bullet in self.bullets:
@@ -227,8 +237,10 @@ class Zombio:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
             enemy.movement()
-        if self.nearest_enemy():
-            self.player_attack()
+        #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
+        #    self.player_range_attack()
+        if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
+            self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
         self.player.update()
         self.player.check_collision(self.structures)

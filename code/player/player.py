@@ -28,6 +28,8 @@ class Player(Object):
         self.health = PLAYER_HEALTH
         self.health_max = PLAYER_MAX_HEALTH
         self.target_health = PLAYER_MAX_HEALTH
+        self.melee_range = PLAYER_MELEE_RANGE
+        self.bullet_range = PLAYER_BULLET_RANGE
 
     def input(self):
         keys = pygame.key.get_pressed()
