@@ -10,7 +10,7 @@ class Melee(Object):
         self.rect = self.image.get_rect(center=position)
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
-        self.dealt_damage = Falseq
+        self.dealt_damage = False
 
     def deal_damage(self):
         self.dealt_damage = True
