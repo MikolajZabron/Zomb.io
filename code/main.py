@@ -16,7 +16,7 @@ from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from ui.ui_graphic import UIGraphic
 from ui.skill_box import SkillBox
-
+from structures.structure import Tile
 
 
 
@@ -50,11 +50,13 @@ class Zombio:
         tmx_data = load_pygame("Map/data/mapa/map.tmx")
 
         self.all_sprites = pygame.sprite.Group()
+        self.ground = pygame.sprite.Group()
         self.structures = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.colliders = pygame.sprite.Group()
         self.skills = pygame.sprite.Group()
+
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
@@ -65,11 +67,21 @@ class Zombio:
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
         self.skill_boxes = []
 
+        # Calculate map dimensions and offset
+        map_width = tmx_data.width * tmx_data.tilewidth
+        map_height = tmx_data.height * tmx_data.tileheight
+        offset_x = map_width // 2
+        offset_y = map_height // 2
+
         for layer in tmx_data.visible_layers:
             if layer.name == "Structures" and isinstance(layer, TiledTileLayer):
                 for x, y, surf in layer.tiles():
-                    pos = (x * tmx_data.tilewidth, y * tmx_data.tileheight)
-                    Structure(pos, surf, (self.camera_group, self.structures))
+                    pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
+                    Structure(pos, surf, (self.all_sprites, self.camera_group, self.structures))
+            if layer.name == "ground" and isinstance(layer, TiledTileLayer):
+                for x, y, surf in layer.tiles():
+                    pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
+                    Tile(pos, surf, (self.all_sprites, self.camera_group, self.ground))
 
         self.last_shot_time = 0
         self.selected_skill_index = 1
@@ -242,8 +254,7 @@ class Zombio:
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
-        self.player.update()
-        self.player.check_collision(self.structures)
+        self.player.update(self.structures)
         self.health_bar.update()
         self.exp_bar.update()
 

@@ -1,5 +1,7 @@
 import pygame.sprite
 
+from player.player import Player
+
 
 class CameraGroup(pygame.sprite.Group):
     """
@@ -41,10 +43,16 @@ class CameraGroup(pygame.sprite.Group):
         self.center_target_camera(target)
 
         # Ground
-        ground_offset = self.ground_rect.topleft - self.offset
-        self.screen.blit(self.ground_surface, ground_offset)
+        # ground_offset = self.ground_rect.topleft - self.offset
+        # self.screen.blit(self.ground_surface, ground_offset)
 
         # Objects
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
+        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.bottom):
             offset_position = sprite.rect.topleft - self.offset
             self.screen.blit(sprite.image, offset_position)
+
+    def update(self, *args, **kwargs):
+        # Update all sprites except player
+        for sprite in self.sprites():
+            if not isinstance(sprite, Player):
+                sprite.update(*args, **kwargs)

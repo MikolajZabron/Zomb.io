@@ -47,10 +47,12 @@ class Player(Object):
         else:
             self.direction.x = 0
 
-    def update(self):
+    def update(self, structures=None):
         self.input()
         self.prev_rect = self.rect.copy()  # Store the previous position
         self.rect.center += self.direction * self.speed
+        if structures:
+            self.collide_with_structures(structures)
 
     def take_damage(self, amount):
         if self.target_health > 0:
@@ -58,8 +60,21 @@ class Player(Object):
         if self.target_health <= 0:
             self.target_health = 0
 
-    def check_collision(self, group):
-        collisions = pygame.sprite.spritecollide(self, group, False)
+    def collide_with_structures(self, structures):
+        self.rect.x += self.direction.x * self.speed
+        for structure in structures:
+            if self.rect.colliderect(structure.rect):
+                if self.direction.x > 0:
+                    self.rect.right = structure.rect.left
+                if self.direction.x < 0:
+                    self.rect.left = structure.rect.right
+        self.rect.y += self.direction.y * self.speed
+        for structure in structures:
+            if self.rect.colliderect(structure.rect):
+                if self.direction.y > 0:
+                    self.rect.bottom = structure.rect.top
+                if self.direction.y < 0:
+                    self.rect.top = structure.rect.bottom
 
     def gain_experience(self, amount):
         self.target_exp += amount

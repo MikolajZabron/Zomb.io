@@ -37,7 +37,7 @@ BULLET_TEMPLATE_IMAGE = pygame.image.load(join('images', 'bullet_template.png'))
 BULLET_SPEED = 10
 
 # Melee template settigns
-MELEE_TEMPLATE = pygame.image.load(join('images', 'melee_image.png'))
+MELEE_TEMPLATE = pygame.image.load(join('images', 'bullet_template.png'))
 
 # UI Bar's settings
 BAR_TRANSITION_SPEED = 0.5
