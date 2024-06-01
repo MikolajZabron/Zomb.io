@@ -13,6 +13,7 @@ class Player(Object):
         self.old_y = 0
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.exp = PLAYER_EXPERIENCE
         self.target_exp = PLAYER_EXPERIENCE
@@ -58,12 +59,12 @@ class Player(Object):
     def take_damage(self, amount):
         if self.target_health > 0:
             self.target_health -= amount
-        if self.target_health <= 0:
+        else:
             self.target_health = 0
 
     def collide_with_structures(self, structures):
         for structure in structures:
-            if self.rect.colliderect(structure.rect):
+            if pygame.sprite.collide_mask(self, structure):
                 self.rect.topleft = self.old_x, self.old_y
 
     def gain_experience(self, amount):

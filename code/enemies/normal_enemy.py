@@ -7,6 +7,8 @@ from enemies.enemy import Enemy
 class RegularEnemy(Enemy):
     def __init__(self, groups, position: Vector2, speed, health: int, attack_power: int, image=ENEMY_TEMPLATE_IMAGE):
         super().__init__(groups, position, speed, health, attack_power, image)
+        self.movement_direction = Vector2(0, 0)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def calculate_movement(self, player_pos: Vector2):
         direction_vector = pygame.math.Vector2(player_pos.x - self.rect.x,
@@ -17,10 +19,10 @@ class RegularEnemy(Enemy):
             self.movement_direction = direction_vector
 
     def check_collision(self, player, structures):
-        if pygame.sprite.collide_rect(self, player):
+        if pygame.sprite.collide_mask(self, player):
             player.take_damage(self.attack_power)
 
-    def movement(self, structures = None):
+    def movement(self, structures=None):
         self.old_x, self.old_y = self.rect.topleft
         self.rect.move_ip(self.movement_direction)
         if structures:
@@ -28,7 +30,7 @@ class RegularEnemy(Enemy):
 
     def collide_with_structures(self, structures):
         for structure in structures:
-            if self.rect.colliderect(structure.rect):
+            if pygame.sprite.collide_mask(self, structure):
                 self.avoid_obstacle(structure)
 
     def avoid_obstacle(self, structure):
