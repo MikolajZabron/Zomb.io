@@ -4,9 +4,10 @@ from utilities.graphical_object import Object
 
 class Player(Object):
 
-    def __init__(self, position, groups):
+    def __init__(self, position, groups, animation_frames):
         super().__init__(groups)
-        self.image = PLAYER_IMAGE.convert_alpha()
+        self.animation_frames: list = animation_frames
+        self.image = self.animation_frames[0].convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
         self.rect = self.image.get_rect(topleft=position)
         self.old_x = 0
@@ -33,6 +34,12 @@ class Player(Object):
         self.melee_range = PLAYER_MELEE_RANGE
         self.bullet_range = PLAYER_BULLET_RANGE
 
+        # Animation stuff
+        self.animation_frames = animation_frames
+        self.frame_rate = 10
+        self.current_frame = 0
+        self.last_update_time = pygame.time.get_ticks()
+
     def input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -55,6 +62,7 @@ class Player(Object):
         self.rect.topleft += self.direction * self.speed
         if structures:
             self.collide_with_structures(structures)
+        self.update_animation()
 
     def take_damage(self, amount):
         if self.target_health > 0:
@@ -81,3 +89,12 @@ class Player(Object):
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
+
+    def update_animation(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_update_time > 1000 // self.frame_rate:
+            self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
+            self.image = self.animation_frames[self.current_frame].convert_alpha()
+            self.image = pygame.transform.scale(self.image, (128, 128))
+            self.mask = pygame.mask.from_surface(self.image)
+            self.last_update_time = current_time

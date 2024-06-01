@@ -8,6 +8,7 @@ from utilities.settings import *
 class Enemy(Object):
     def __init__(self, groups, position: Vector2, speed, health: int, attack_power: int, image=ENEMY_TEMPLATE_IMAGE):
         super().__init__(groups)
+        self.animation_frames = []
         self.position: Vector2 = position
         self.screen = pygame.display.get_surface()
         self.image = image

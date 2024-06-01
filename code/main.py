@@ -61,7 +61,7 @@ class Zombio:
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE)
-        self.player = Player((-100, 0), (self.all_sprites, self.camera_group))
+        self.player = Player((-100, 0), (self.all_sprites, self.camera_group), PLAYER_ANIMATION)
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))

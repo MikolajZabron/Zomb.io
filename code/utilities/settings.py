@@ -11,6 +11,8 @@ ANIMATION_SPEED = 6
 
 # Player Settings
 PLAYER_IMAGE = pygame.image.load(join('images', 'character_new_version.png'))
+PLAYER_ANIMATION = [pygame.image.load(join('images', 'main_character', f'character1wersja1chodzenie{i}.png'))
+                    for i in range(9)]
 PLAYER_EXPERIENCE = 0
 PLAYER_EXPERIENCE_NEED = 100
 PLAYER_LEVEL = 1
