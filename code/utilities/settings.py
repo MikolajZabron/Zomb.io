@@ -14,7 +14,7 @@ PLAYER_IMAGE = pygame.image.load(join('images', 'character_new_version.png'))
 PLAYER_EXPERIENCE = 0
 PLAYER_EXPERIENCE_NEED = 100
 PLAYER_LEVEL = 1
-PLAYER_SPEED = 2
+PLAYER_SPEED = 4
 PLAYER_ATTACK_SPEED = 1
 PLAYER_DAMAGE = 5
 PLAYER_HEALTH = 10
@@ -36,8 +36,8 @@ ENEMY_TEMPLATE_HEALTH = 10
 BULLET_TEMPLATE_IMAGE = pygame.image.load(join('images', 'bullet_template.png'))
 BULLET_SPEED = 10
 
-# Melee template settigns
-MELEE_TEMPLATE = pygame.image.load(join('images', 'bullet_template.png'))
+# Melee template settings
+MELEE_TEMPLATE = pygame.image.load(join('images', 'example of a weapon and 2 types of swing/swing.png'))
 
 # UI Bar's settings
 BAR_TRANSITION_SPEED = 0.5

@@ -20,7 +20,29 @@ class RegularEnemy(Enemy):
         if pygame.sprite.collide_rect(self, player):
             player.take_damage(self.attack_power)
 
-    def movement(self):
+    def movement(self, structures = None):
+        self.old_x, self.old_y = self.rect.topleft
+        self.rect.move_ip(self.movement_direction)
+        if structures:
+            self.collide_with_structures(structures)
+
+    def collide_with_structures(self, structures):
+        for structure in structures:
+            if self.rect.colliderect(structure.rect):
+                self.avoid_obstacle(structure)
+
+    def avoid_obstacle(self, structure):
+        # Calculate a vector away from the obstacle
+        avoid_vector = Vector2(self.rect.center) - Vector2(structure.rect.center)
+        avoid_vector.normalize()
+        avoid_vector.scale_to_length(self.speed)
+
+        # Combine the current movement direction with the avoid vector
+        self.movement_direction += avoid_vector
+        self.movement_direction.normalize()
+        self.movement_direction.scale_to_length(self.speed)
+
+        # Move the enemy based on the new movement direction
         self.rect.move_ip(self.movement_direction)
 
     def draw(self):

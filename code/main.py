@@ -61,7 +61,7 @@ class Zombio:
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE)
-        self.player = Player((0, 0), (self.all_sprites, self.camera_group))
+        self.player = Player((-100, 0), (self.all_sprites, self.camera_group))
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
@@ -248,7 +248,7 @@ class Zombio:
         for enemy in self.enemies:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
-            enemy.movement()
+            enemy.movement(structures=self.structures)
         #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
         #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:

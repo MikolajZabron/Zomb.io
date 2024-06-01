@@ -12,7 +12,9 @@ class Enemy(Object):
         self.screen = pygame.display.get_surface()
         self.image = image
         self.image = pygame.transform.scale(self.image, (128, 128))
-        self.rect = self.image.get_rect(center=position)
+        self.rect = self.image.get_rect(topleft=position)
+        self.old_x = 0
+        self.old_y = 0
 
         # Basic Statistics
         self.health: int = health

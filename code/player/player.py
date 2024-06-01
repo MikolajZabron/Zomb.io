@@ -8,8 +8,9 @@ class Player(Object):
         super().__init__(groups)
         self.image = PLAYER_IMAGE.convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
-        self.rect = self.image.get_rect(center=position)
-        self.prev_rect = self.rect.copy()
+        self.rect = self.image.get_rect(topleft=position)
+        self.old_x = 0
+        self.old_y = 0
         self.screen = pygame.display.get_surface()
         self.direction = pygame.math.Vector2()
 
@@ -48,9 +49,9 @@ class Player(Object):
             self.direction.x = 0
 
     def update(self, structures=None):
+        self.old_x, self.old_y = self.rect.topleft
         self.input()
-        self.prev_rect = self.rect.copy()  # Store the previous position
-        self.rect.center += self.direction * self.speed
+        self.rect.topleft += self.direction * self.speed
         if structures:
             self.collide_with_structures(structures)
 
@@ -61,20 +62,9 @@ class Player(Object):
             self.target_health = 0
 
     def collide_with_structures(self, structures):
-        self.rect.x += self.direction.x * self.speed
         for structure in structures:
             if self.rect.colliderect(structure.rect):
-                if self.direction.x > 0:
-                    self.rect.right = structure.rect.left
-                if self.direction.x < 0:
-                    self.rect.left = structure.rect.right
-        self.rect.y += self.direction.y * self.speed
-        for structure in structures:
-            if self.rect.colliderect(structure.rect):
-                if self.direction.y > 0:
-                    self.rect.bottom = structure.rect.top
-                if self.direction.y < 0:
-                    self.rect.top = structure.rect.bottom
+                self.rect.topleft = self.old_x, self.old_y
 
     def gain_experience(self, amount):
         self.target_exp += amount
