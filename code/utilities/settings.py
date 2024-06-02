@@ -62,7 +62,7 @@ WAVE_TYPES = [
     {"enemy_types": ["regular"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["regular", "police"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 3], "duration": 10.0},
     {"enemy_types": ["regular horde"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
-    {"enemy_types": ["tank"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 5.0},
+    {"enemy_types": ["police"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 5.0},
     {"enemy_types": ["police horde"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
     {"enemy_types": ["regular", "riot"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
 ]

@@ -18,10 +18,10 @@ class SpawnManager:
             print(random_wave_config)
             self.current_wave = Wave(**WAVE_TYPES[random_wave_config])
 
-    def check_timers(self, groups):
+    def check_timers(self, groups, ranged_group):
         current_time = pygame.time.get_ticks() / 1000
         if current_time - self.time_since_last_wave >= self.current_wave.duration:
             self.wave_number += 1
             self.create_wave()
             self.time_since_last_wave = current_time
-        self.current_wave.update(current_time, groups)
+        self.current_wave.update(current_time, groups, ranged_group)

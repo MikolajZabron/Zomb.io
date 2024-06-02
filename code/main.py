@@ -53,10 +53,11 @@ class Zombio:
         self.ground = pygame.sprite.Group()
         self.structures = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.enemies_ranged = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.colliders = pygame.sprite.Group()
         self.skills = pygame.sprite.Group()
-
+        self.enemy_attacks = pygame.sprite.Group()
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
@@ -232,6 +233,8 @@ class Zombio:
     def collision(self):
         for bullet in self.bullets:
             bullet.collision(self.enemies, self.player.damage, self.player)
+        for bullet in self.enemy_attacks:
+            bullet.check_collision(self.player)
 
     def update_objects(self) -> None:  # Temporary different approach in future
         """
@@ -239,12 +242,15 @@ class Zombio:
         :return: None
 
         """
-        self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group))
+        self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group), self.enemies_ranged)
         self.collision()
         for enemy in self.enemies:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
             enemy.movement(structures=self.structures)
+        for enemy in self.enemies_ranged:
+            enemy.attack(pygame.Vector2(self.player.rect.x, self.player.rect.y),
+                         (self.all_sprites, self.enemy_attacks, self.camera_group))
         #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
         #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
