@@ -32,6 +32,7 @@ BACKGROUND_IMAGE = pygame.image.load(join('images', 'background_placeholder.png'
 
 # Template enemy settings
 ENEMY_TEMPLATE_IMAGE = pygame.image.load(join('images', 'zombie_new_version.png'))
+ENEMY_TANK_IMAGE = pygame.image.load(join('images', 'police_zombie', 'zombie2wersjachodzenie1.png'))
 ENEMY_TEMPLATE_HEALTH = 10
 
 # Bullet template settings
@@ -49,3 +50,20 @@ SKILLBOX_TRANSITION_SPEED = 10
 
 # UI Graphic settings
 UI_GRAPHIC = pygame.image.load(join('images', 'UIZombie.png'))
+
+# Wave type Information Settings
+WAVE_TYPES = [
+    {"enemy_types": ["regular"], "spawn_rates": [1.0], "spawn_numbers": [2],  "duration": 10.0},
+    {"enemy_types": ["regular", "tank"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 3], "duration": 10.0},
+    {"enemy_types": ["regular horde", "regular"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
+    {"enemy_types": ["tank"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 5.0},
+    {"enemy_types": ["tank horde", "regular"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
+    {"enemy_types": ["regular", "boss"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
+]
+
+# Predefined waves configuration
+PREDEFINED_WAVES = [
+    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [2], "duration": 10.0},
+    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [3], "duration": 10.0},
+    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [4], "duration": 10.0}
+]

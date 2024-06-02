@@ -17,7 +17,7 @@ from enemies.normal_enemy import RegularEnemy
 from ui.ui_graphic import UIGraphic
 from ui.skill_box import SkillBox
 from structures.structure import Tile
-
+from spawnManager.spawn_manager import SpawnManager
 
 
 
@@ -87,12 +87,7 @@ class Zombio:
         self.selected_skill_index = 1
         self.skill_list = []
 
-        for j in range(5):
-            random_x = random.randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
-            random_y = random.randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
-            enemy = RegularEnemy((self.all_sprites, self.enemies, self.camera_group),
-                                 pygame.Vector2(random_x, random_y),
-                                 3, 10, 0.1)
+        self.spawn_manager = SpawnManager()
 
     def start(self) -> None:
         """
@@ -244,6 +239,7 @@ class Zombio:
         :return: None
 
         """
+        self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group))
         self.collision()
         for enemy in self.enemies:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
@@ -253,6 +249,7 @@ class Zombio:
         #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
+        print(len(self.enemies.sprites()))
         self.player_level_up()
         self.player.update(self.structures)
         self.health_bar.update()

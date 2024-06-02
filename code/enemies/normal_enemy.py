@@ -34,17 +34,16 @@ class RegularEnemy(Enemy):
                 self.avoid_obstacle(structure)
 
     def avoid_obstacle(self, structure):
-        # Calculate a vector away from the obstacle
         avoid_vector = Vector2(self.rect.center) - Vector2(structure.rect.center)
-        avoid_vector.normalize()
-        avoid_vector.scale_to_length(self.speed)
+        if avoid_vector.length() > 0:
+            avoid_vector.normalize()
+            avoid_vector.scale_to_length(self.speed)
 
-        # Combine the current movement direction with the avoid vector
         self.movement_direction += avoid_vector
-        self.movement_direction.normalize()
-        self.movement_direction.scale_to_length(self.speed)
+        if self.movement_direction.length() > 0:
+            self.movement_direction.normalize()
+            self.movement_direction.scale_to_length(self.speed)
 
-        # Move the enemy based on the new movement direction
         self.rect.move_ip(self.movement_direction)
 
     def draw(self):
