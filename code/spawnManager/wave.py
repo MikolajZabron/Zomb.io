@@ -23,7 +23,8 @@ class Wave:
             random_x = randint(-SCREEN_WIDTH // 2, SCREEN_WIDTH // 2)
             random_y = randint(-SCREEN_HEIGHT // 2, SCREEN_HEIGHT // 2)
             if enemy_type == "regular":
-                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1)
+                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1,
+                             ENEMY_REGULAR_ANIMATION)
                 print("Spawned regular")
             elif enemy_type == "regular horde":
                 print("Spawned regular horde")
@@ -32,15 +33,19 @@ class Wave:
                         random_x += 32
                     else:
                         random_y += 32
-                    RegularEnemy(groups, Vector2(random_x, random_y),3, 10, 1)
+                    RegularEnemy(groups, Vector2(random_x, random_y),3, 10, 1,
+                                 ENEMY_REGULAR_ANIMATION)
             elif enemy_type == "tank":
-                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1, image=ENEMY_TANK_IMAGE)
+                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1,
+                             ENEMY_POLICE_ANIMATION, image=ENEMY_TANK_IMAGE)
                 print("Spawned tank")
             # TO DO
             elif enemy_type == "tank horde":
-                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1)
+                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1,
+                             ENEMY_POLICE_ANIMATION)
                 print("Spawned tank horde")
             # TO DO
             elif enemy_type == "boss":
                 print("Spawned boss")
-                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1)
+                RegularEnemy(groups, Vector2(random_x, random_y), 3, 10, 1,
+                             ENEMY_RIOT_ANIMATION)

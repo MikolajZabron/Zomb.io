@@ -249,7 +249,6 @@ class Zombio:
         #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
-        print(len(self.enemies.sprites()))
         self.player_level_up()
         self.player.update(self.structures)
         self.health_bar.update()

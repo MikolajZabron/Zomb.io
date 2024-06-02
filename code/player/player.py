@@ -35,7 +35,6 @@ class Player(Object):
         self.bullet_range = PLAYER_BULLET_RANGE
 
         # Animation stuff
-        self.animation_frames = animation_frames
         self.frame_rate = 10
         self.current_frame = 0
         self.last_update_time = pygame.time.get_ticks()
