@@ -38,6 +38,7 @@ class Player(Object):
         self.frame_rate = 10
         self.current_frame = 0
         self.last_update_time = pygame.time.get_ticks()
+        self.not_moving = True
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -58,6 +59,10 @@ class Player(Object):
     def update(self, structures=None):
         self.old_x, self.old_y = self.rect.topleft
         self.input()
+        if self.direction.length() == 0:
+            self.not_moving = True
+        else:
+            self.not_moving = False
         self.rect.topleft += self.direction * self.speed
         if structures:
             self.collide_with_structures(structures)
@@ -91,9 +96,16 @@ class Player(Object):
 
     def update_animation(self):
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_update_time > 1000 // self.frame_rate:
-            self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
-            self.image = self.animation_frames[self.current_frame].convert_alpha()
+        if not self.not_moving:
+            if current_time - self.last_update_time > 1000 // self.frame_rate:
+                self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
+                self.image = self.animation_frames[self.current_frame].convert_alpha()
+                self.image = pygame.transform.scale(self.image, (128, 128))
+                self.mask = pygame.mask.from_surface(self.image)
+                self.last_update_time = current_time
+        else:
+            self.image = self.animation_frames[0].convert_alpha()
             self.image = pygame.transform.scale(self.image, (128, 128))
             self.mask = pygame.mask.from_surface(self.image)
             self.last_update_time = current_time
+

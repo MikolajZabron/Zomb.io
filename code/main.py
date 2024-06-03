@@ -84,6 +84,7 @@ class Zombio:
                     pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
                     Tile(pos, surf, (self.all_sprites, self.camera_group, self.ground))
 
+
         self.last_shot_time = 0
         self.selected_skill_index = 1
         self.skill_list = []
