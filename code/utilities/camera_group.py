@@ -10,7 +10,7 @@ class CameraGroup(pygame.sprite.Group):
     Custom sprite group that is made so that camera behaviour in proper way
     """
 
-    def __init__(self, background_image):
+    def __init__(self, background_image, priority_groups):
         super().__init__()
         self.screen = pygame.display.get_surface()
 
@@ -22,6 +22,8 @@ class CameraGroup(pygame.sprite.Group):
         # Ground
         self.ground_surface = background_image.convert_alpha()
         self.ground_rect = self.ground_surface.get_rect(center=(0, 0))
+
+        self.priority_groups = priority_groups
 
     def center_target_camera(self, target) -> None:
         """
@@ -48,25 +50,13 @@ class CameraGroup(pygame.sprite.Group):
         # ground_offset = self.ground_rect.topleft - self.offset
         # self.screen.blit(self.ground_surface, ground_offset)
 
-        # Objects
-        non_bullet_sprites = []
-        bullet_sprites = []
+        for group in self.priority_groups:
+            for sprite in group:
+                offset_position = sprite.rect.center - self.offset
+                self.screen.blit(sprite.image, offset_position)
 
-        for sprite in self.sprites():
-            if isinstance(sprite, Projectile) or isinstance(sprite, BulletTemplate):
-                bullet_sprites.append(sprite)
-            else:
-                non_bullet_sprites.append(sprite)
-
-        # Draw non-bullet sprites first
-        for sprite in sorted(non_bullet_sprites, key=lambda sprite: sprite.rect.bottom):
-            offset_position = sprite.rect.topleft - self.offset
-            self.screen.blit(sprite.image, offset_position)
-
-        # Draw bullet sprites last
-        for sprite in bullet_sprites:
-            offset_position = sprite.rect.topleft - self.offset
-            self.screen.blit(sprite.image, offset_position)
+        offset_position = target.rect.center - self.offset
+        self.screen.blit(target.image, offset_position)
 
     def update(self, *args, **kwargs):
         # Update all sprites except player

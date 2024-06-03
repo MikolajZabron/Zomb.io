@@ -10,7 +10,7 @@ class Projectile(Object):
         super().__init__(groups)
         self.image = BULLET_TEMPLATE_IMAGE.convert_alpha()
         self.image = pygame.transform.scale(self.image, (10, 10))
-        self.rect = self.image.get_rect(topleft=position)
+        self.rect = self.image.get_rect(center=position)
         self.direction = direction.normalize()
         self.speed = speed
         self.damage = damage
@@ -18,7 +18,6 @@ class Projectile(Object):
         self.creation_time = pygame.time.get_ticks()
         self.lifespan = 4000
         self.mask = pygame.mask.from_surface(self.image)
-        print("created")
 
     def update(self):
         self.rect.move_ip(self.direction * self.speed)
