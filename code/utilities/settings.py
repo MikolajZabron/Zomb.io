@@ -30,6 +30,17 @@ PLAYER_BULLET_RANGE = 500
 # Background Settings
 BACKGROUND_IMAGE = pygame.image.load(join('images', 'background_placeholder.png'))
 
+# Enemy Settings
+REGULAR_ENEMY_DAMAGE = 1
+REGULAR_ENEMY_HP = 10
+REGULAR_ENEMY_SPEED = 3
+POLICE_ENEMY_DAMAGE = 3
+POLICE_ENEMY_HP = 5
+POLICE_ENEMY_SPEED = 3
+RIOT_ENEMY_DMG = 4
+RIOT_ENEMY_HP = 15
+RIOT_ENEMY_SPEED = 3
+
 # Template enemy settings
 ENEMY_TEMPLATE_IMAGE = pygame.image.load(join('images', 'zombie_new_version.png'))
 ENEMY_REGULAR_ANIMATION = [pygame.image.load(join('images', 'basic_zombie', f'zombie1wersja1chodzenie{i}.png'))
@@ -61,9 +72,9 @@ UI_GRAPHIC = pygame.image.load(join('images', 'UIZombie.png'))
 WAVE_TYPES = [
     {"enemy_types": ["regular"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["regular", "police"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 3], "duration": 10.0},
-    {"enemy_types": ["regular horde"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
+    {"enemy_types": ["regular horde"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["police"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 5.0},
-    {"enemy_types": ["police horde"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
+    {"enemy_types": ["police horde"], "spawn_rates": [1.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["regular", "riot"], "spawn_rates": [1.0, 1.0], "spawn_numbers": [2, 4], "duration": 10.0},
 ]
 
@@ -73,3 +84,8 @@ PREDEFINED_WAVES = [
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [3], "duration": 10.0},
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [4], "duration": 10.0}
 ]
+
+# Zombie mutation
+MUTATION_CHANCE = 0.1
+MUTATION_HP_INCREASE = 10
+MUTATION_DMG_INCREASE = 2
