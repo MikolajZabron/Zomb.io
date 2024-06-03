@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="111">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="132">
  <tileset firstgid="1" source="../../../Map/data/tsx/3.tsx"/>
  <tileset firstgid="2" source="../../../Map/data/tsx/5.tsx"/>
  <tileset firstgid="3" source="../tsx/objects.tsx"/>
@@ -211,5 +211,23 @@
   <object id="58" name="objects" type="Objects" gid="3" x="1784" y="1591.76" width="32" height="32"/>
   <object id="59" name="objects" type="Objects" gid="3" x="2277.94" y="1582.67" width="32" height="32"/>
   <object id="60" name="objects" type="Objects" gid="3" x="2335.52" y="1528.12" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="7" name="objects2">
+  <object id="113" name="wall" type="Walls" x="1965" y="1159" width="73" height="80"/>
+  <object id="114" name="wall" type="Walls" x="1995" y="1232" width="42" height="35"/>
+  <object id="115" name="wall" type="Walls" x="2569" y="782" width="140" height="1168"/>
+  <object id="116" name="wall" type="Walls" x="2408" y="687" width="190" height="102"/>
+  <object id="117" name="wall" type="Walls" x="2375" y="623" width="94" height="70"/>
+  <object id="118" name="wall" type="Walls" x="2348" y="562" width="65" height="68"/>
+  <object id="119" name="wall" type="Walls" x="2312" y="464" width="88" height="101"/>
+  <object id="120" name="wall" type="Walls" x="907" y="414" width="1469" height="56"/>
+  <object id="121" name="wall" type="Walls" x="775" y="453" width="142" height="112"/>
+  <object id="122" name="wall" type="Walls" x="701" y="557" width="88" height="103"/>
+  <object id="123" name="wall" type="Walls" x="613" y="652" width="112" height="138"/>
+  <object id="124" name="wall" type="Walls" x="537" y="790" width="94" height="883"/>
+  <object id="126" name="wall" type="Walls" x="559" y="1671" width="134" height="90"/>
+  <object id="128" name="wall" type="Walls" x="605" y="1735" width="152" height="139"/>
+  <object id="129" name="wall" type="Walls" x="680" y="1866" width="302" height="110"/>
+  <object id="131" name="wall" type="Walls" x="955" y="1929" width="1697" height="97"/>
  </objectgroup>
 </map>
