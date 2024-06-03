@@ -5,11 +5,9 @@ import math
 
 
 class RiotEnemy(Enemy):
-    def __init__(self, groups, position: Vector2, speed, health: int, attack_power: int, animation_frames,
-                 image=ENEMY_TEMPLATE_IMAGE):
-        super().__init__(groups, position, speed, health, attack_power, animation_frames, image)
+    def __init__(self, groups, position: Vector2, speed, health: int, attack_power: int, animation_frames):
+        super().__init__(groups, position, speed, health, attack_power, animation_frames)
         self.movement_direction = Vector2(0, 0)
-        self.mask = pygame.mask.from_surface(self.image)
         self.charge_loading = False
         self.charging = False
         self.charge_start_time = 0
@@ -53,17 +51,24 @@ class RiotEnemy(Enemy):
         if pygame.sprite.collide_mask(self, player):
             player.take_damage(self.attack_power)
 
-    def movement(self, structures=None):
-        self.old_x, self.old_y = self.rect.topleft
+    def movement(self, structures=None, borders=None):
+        self.old_x, self.old_y = self.rect.center
         self.rect.move_ip(self.movement_direction)
+        if borders:
+            self.collide_with_map_border(borders)
         if structures:
             self.collide_with_structures(structures)
         self.update_animation()
 
     def collide_with_structures(self, structures):
         for structure in structures:
-            if pygame.sprite.collide_mask(self, structure):
+            if pygame.sprite.collide_rect(self, structure):
                 self.avoid_obstacle(structure)
+
+    def collide_with_map_border(self, borders):
+        for border in borders:
+            if pygame.sprite.collide_rect(self, border):
+                self.avoid_obstacle(border)
 
     def avoid_obstacle(self, structure):
         avoid_vector = Vector2(self.rect.center) - Vector2(structure.rect.center)
@@ -77,15 +82,3 @@ class RiotEnemy(Enemy):
             self.movement_direction.scale_to_length(self.speed)
 
         self.rect.move_ip(self.movement_direction)
-
-    def draw(self):
-        self.screen.blit(self.image, self.rect)
-
-    def update_animation(self):
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_update_time > 1000 // self.frame_rate:
-            self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
-            self.image = self.animation_frames[self.current_frame].convert_alpha()
-            self.image = pygame.transform.scale(self.image, (120, 120))
-            self.mask = pygame.mask.from_surface(self.image)
-            self.last_update_time = current_time

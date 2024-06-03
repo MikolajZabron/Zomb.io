@@ -8,8 +8,8 @@ class Player(Object):
         super().__init__(groups)
         self.animation_frames: list = animation_frames
         self.image = self.animation_frames[0].convert_alpha()
-        self.image = pygame.transform.scale(self.image, (128, 128))
-        self.rect = self.image.get_rect(topleft=position)
+        self.image = pygame.transform.scale(self.image, (32, 32))
+        self.rect = self.image.get_rect(center=position)
         self.old_x = 0
         self.old_y = 0
         self.screen = pygame.display.get_surface()
@@ -56,16 +56,18 @@ class Player(Object):
         else:
             self.direction.x = 0
 
-    def update(self, structures=None):
-        self.old_x, self.old_y = self.rect.topleft
+    def update(self, structures=None, borders=None):
+        self.old_x, self.old_y = self.rect.center
         self.input()
         if self.direction.length() == 0:
             self.not_moving = True
         else:
             self.not_moving = False
-        self.rect.topleft += self.direction * self.speed
+        self.rect.center += self.direction * self.speed
         if structures:
             self.collide_with_structures(structures)
+        if borders:
+            self.collide_with_map_borders(borders)
         self.update_animation()
 
     def take_damage(self, amount):
@@ -77,7 +79,15 @@ class Player(Object):
     def collide_with_structures(self, structures):
         for structure in structures:
             if pygame.sprite.collide_mask(self, structure):
-                self.rect.topleft = self.old_x, self.old_y
+                self.rect.center = self.old_x, self.old_y
+
+    def collide_with_map_borders(self, borders):
+        if ((self.rect.x < 629 - 1600) or (self.rect.x > 2568 - 1600) or (self.rect.y < 471 - 1200) or
+                (self.rect.y > 1928 - 1200)):
+            self.rect.center = self.old_x, self.old_y
+        for border in borders:
+            if pygame.sprite.collide_mask(self, border):
+                self.rect.center = self.old_x, self.old_y
 
     def gain_experience(self, amount):
         self.target_exp += amount
@@ -100,12 +110,12 @@ class Player(Object):
             if current_time - self.last_update_time > 1000 // self.frame_rate:
                 self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
                 self.image = self.animation_frames[self.current_frame].convert_alpha()
-                self.image = pygame.transform.scale(self.image, (128, 128))
+                self.image = pygame.transform.scale(self.image, (32, 32))
                 self.mask = pygame.mask.from_surface(self.image)
                 self.last_update_time = current_time
         else:
             self.image = self.animation_frames[0].convert_alpha()
-            self.image = pygame.transform.scale(self.image, (128, 128))
+            self.image = pygame.transform.scale(self.image, (32, 32))
             self.mask = pygame.mask.from_surface(self.image)
             self.last_update_time = current_time
 

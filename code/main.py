@@ -17,7 +17,7 @@ from utilities.camera_group import CameraGroup
 from enemies.normal_enemy import RegularEnemy
 from ui.ui_graphic import UIGraphic
 from ui.skill_box import SkillBox
-from structures.structure import Tile
+from structures.structure import Ground, CollisionBoundary
 from spawnManager.spawn_manager import SpawnManager
 
 
@@ -48,20 +48,22 @@ class Zombio:
         self.flag1 = True
         self.flag2 = True
 
-        tmx_data = load_pygame("Map/data/mapa/map.tmx")
+        tmx_data = load_pygame("new_map/data/map/new_map.tmx")
 
         self.all_sprites = pygame.sprite.Group()
         self.ground = pygame.sprite.Group()
+        self.decorations = pygame.sprite.Group()
         self.structures = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
-        self.colliders = pygame.sprite.Group()
         self.skills = pygame.sprite.Group()
         self.enemy_attacks = pygame.sprite.Group()
+        self.map_borders = pygame.sprite.Group()
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
-        self.camera_group = CameraGroup(BACKGROUND_IMAGE)
+        self.camera_group = CameraGroup(BACKGROUND_IMAGE, (self.ground, self.decorations, self.structures,
+                                                           self.enemies, self.enemy_attacks, self.bullets, self.skills))
         self.player = Player((-100, 0), (self.all_sprites, self.camera_group), PLAYER_ANIMATION)
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
@@ -73,18 +75,26 @@ class Zombio:
         map_height = tmx_data.height * tmx_data.tileheight
         offset_x = map_width // 2
         offset_y = map_height // 2
+        print("Offset", offset_x)
+        print("Offset", offset_y)
 
         for layer in tmx_data.visible_layers:
-            if layer.name == "Structures" and isinstance(layer, TiledTileLayer):
-                for x, y, surf in layer.tiles():
-                    pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
-                    Structure(pos, surf, (self.all_sprites, self.camera_group, self.structures))
             if layer.name == "ground" and isinstance(layer, TiledTileLayer):
                 for x, y, surf in layer.tiles():
                     pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
-                    Tile(pos, surf, (self.all_sprites, self.camera_group, self.ground))
+                    Ground(pos, surf, (self.all_sprites, self.camera_group, self.ground))
+            if layer.name == "decorations" and isinstance(layer, TiledTileLayer):
+                for x, y, surf in layer.tiles():
+                    pos = ((x * tmx_data.tilewidth) - offset_x, (y * tmx_data.tileheight) - offset_y)
+                    Ground(pos, surf, (self.all_sprites, self.camera_group, self.decorations))
 
-
+        for obj in tmx_data.objects:
+            pos = (obj.x - offset_x, obj.y - offset_y)
+            if obj.name == "objects":
+                Structure(pos, obj.image, (self.all_sprites, self.camera_group, self.structures))
+            if obj.name == "wall":
+                CollisionBoundary(pos, obj.width, obj.height,
+                                  (self.all_sprites, self.camera_group, self.map_borders))
         self.last_shot_time = 0
         self.selected_skill_index = 1
         self.skill_list = []
@@ -251,15 +261,16 @@ class Zombio:
                              (self.all_sprites, self.enemy_attacks, self.camera_group))
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
-            enemy.movement(structures=self.structures)
+            enemy.movement(structures=self.structures, borders=self.map_borders)
         #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
         #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
-        self.player.update(self.structures)
+        self.player.update(self.structures, self.map_borders)
         self.health_bar.update()
         self.exp_bar.update()
+        print(len(self.enemies))
 
     def update_screen(self) -> None:
         """
