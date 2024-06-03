@@ -304,7 +304,7 @@ class Zombio:
                              (self.all_sprites, self.enemy_attacks, self.camera_group))
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
-            enemy.movement(structures=self.structures)
+            enemy.movement(structures=self.structures, borders=self.map_borders)
         if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
             self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
@@ -313,7 +313,6 @@ class Zombio:
         self.player.update(self.structures, self.map_borders)
         self.health_bar.update()
         self.exp_bar.update()
-        print(len(self.enemies))
 
     def update_screen(self) -> None:
         """
