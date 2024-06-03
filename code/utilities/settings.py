@@ -80,7 +80,7 @@ WAVE_TYPES = [
 
 # Predefined waves configuration
 PREDEFINED_WAVES = [
-    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [2], "duration": 10.0},
+    {"enemy_types": ["police"], "spawn_rates": [3.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [3], "duration": 10.0},
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [4], "duration": 10.0}
 ]

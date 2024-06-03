@@ -21,7 +21,7 @@ class PoliceEnemy(Enemy):
     def calculate_movement(self, player_pos: Vector2):
         direction_vector = Vector2(player_pos.x - self.rect.centerx, player_pos.y - self.rect.centery)
         distance = math.sqrt((player_pos.x - self.rect.x) ** 2 + (player_pos.y - self.rect.y) ** 2)
-        if distance > self.min_distance:
+        if distance > self.min_distance + 20:
             direction_vector.normalize()
             direction_vector.scale_to_length(self.speed)
             self.movement_direction = direction_vector
@@ -30,6 +30,8 @@ class PoliceEnemy(Enemy):
             direction_vector.normalize()
             direction_vector.scale_to_length(self.speed)
             self.movement_direction = direction_vector
+        else:
+            self.movement_direction = pygame.math.Vector2(0, 0)
 
     def check_collision(self, player, structures):
         if pygame.sprite.collide_mask(self, player):

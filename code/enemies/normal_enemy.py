@@ -44,7 +44,8 @@ class RegularEnemy(Enemy):
         self.movement_direction += avoid_vector
         if self.movement_direction.length() > 0:
             self.movement_direction.normalize()
-            self.movement_direction.scale_to_length(self.speed)
+            if self.movement_direction.length() > 0:
+                self.movement_direction.scale_to_length(self.speed)
 
         self.rect.move_ip(self.movement_direction)
 

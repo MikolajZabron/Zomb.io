@@ -1,6 +1,8 @@
 import pygame.sprite
 
+from enemies.zombie_projectile import Projectile
 from player.player import Player
+from weapons.bullet_template import BulletTemplate
 
 
 class CameraGroup(pygame.sprite.Group):
@@ -47,7 +49,22 @@ class CameraGroup(pygame.sprite.Group):
         # self.screen.blit(self.ground_surface, ground_offset)
 
         # Objects
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.bottom):
+        non_bullet_sprites = []
+        bullet_sprites = []
+
+        for sprite in self.sprites():
+            if isinstance(sprite, Projectile) or isinstance(sprite, BulletTemplate):
+                bullet_sprites.append(sprite)
+            else:
+                non_bullet_sprites.append(sprite)
+
+        # Draw non-bullet sprites first
+        for sprite in sorted(non_bullet_sprites, key=lambda sprite: sprite.rect.bottom):
+            offset_position = sprite.rect.topleft - self.offset
+            self.screen.blit(sprite.image, offset_position)
+
+        # Draw bullet sprites last
+        for sprite in bullet_sprites:
             offset_position = sprite.rect.topleft - self.offset
             self.screen.blit(sprite.image, offset_position)
 
