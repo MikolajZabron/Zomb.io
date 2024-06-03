@@ -17,6 +17,7 @@ class Enemy(Object):
         self.rect = self.image.get_rect(topleft=position)
         self.old_x = 0
         self.old_y = 0
+        self.last_shot_time = 0
 
         # Basic Statistics
         self.health: int = health

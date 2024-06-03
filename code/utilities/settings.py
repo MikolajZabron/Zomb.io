@@ -23,7 +23,6 @@ PLAYER_HEALTH = 50
 PLAYER_MAX_HEALTH = 50
 PLAYER_RANGED_DAMAGE = 0
 PLAYER_MELEE_DAMAGE = 0
-PLAYER_ENGINEER_DAMAGE = 0
 PLAYER_MELEE_RANGE = 100
 PLAYER_BULLET_RANGE = 500
 
@@ -53,14 +52,15 @@ ENEMY_TANK_IMAGE = pygame.image.load(join('images', 'police_zombie', 'zombie2wer
 ENEMY_TEMPLATE_HEALTH = 10
 
 # Bullet template settings
-BULLET_TEMPLATE_IMAGE = pygame.image.load(join('images', 'bullet_template.png'))
+BULLET_TEMPLATE_IMAGE = pygame.image.load(join('images', 'bullet.png'))
 BULLET_SPEED = 10
 
 # Melee template settings
 MELEE_TEMPLATE = pygame.image.load(join('images', 'example of a weapon and 2 types of swing/swing.png'))
 
 # UI Bar's settings
-BAR_TRANSITION_SPEED = 0.5
+BAR_TRANSITION_SPEED = 5
+EXP_BAR_TRANSITION_SPEED = 0.5
 
 # UI Skillbox settings
 SKILLBOX_TRANSITION_SPEED = 10
@@ -89,3 +89,18 @@ PREDEFINED_WAVES = [
 MUTATION_CHANCE = 0.1
 MUTATION_HP_INCREASE = 10
 MUTATION_DMG_INCREASE = 2
+
+# Paused images
+PAUSED_IMAGE = pygame.image.load(join('images', 'paused.png'))
+EXIT_IMAGE = pygame.image.load(join('images', 'exit.png'))
+RETURN_IMAGE = pygame.image.load(join('images', 'return.png'))
+START_IMAGE = pygame.image.load(join('images', 'start.png'))
+
+PAUSED_WHITE_IMAGE = pygame.image.load(join('images', 'paused_white.png'))
+EXIT_WHITE_IMAGE = pygame.image.load(join('images', 'exit_white.png'))
+RETURN_WHITE_IMAGE = pygame.image.load(join('images', 'return_white.png'))
+START_WHITE_IMAGE = pygame.image.load(join('images', 'start_white.png'))
+
+# Menu settings
+MENU_IMAGE = pygame.image.load(join('images', 'menu_image.png'))
+ZOMBIO_IMAGE = pygame.image.load(join('images', 'zombio.png'))

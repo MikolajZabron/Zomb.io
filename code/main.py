@@ -4,6 +4,8 @@ import random
 
 import pygame
 from pytmx import TiledTileLayer
+from pytmx.util_pygame import load_pygame
+from structures.structure import Structure
 
 from enemies.police_enemy import PoliceEnemy
 from weapons.melee import Melee
@@ -14,16 +16,10 @@ from ui.exp_bar import ExperienceBar
 from weapons.bullet_template import BulletTemplate
 from world import World
 from utilities.camera_group import CameraGroup
-from enemies.normal_enemy import RegularEnemy
 from ui.ui_graphic import UIGraphic
 from ui.skill_box import SkillBox
 from structures.structure import Tile
 from spawnManager.spawn_manager import SpawnManager
-
-
-
-from pytmx.util_pygame import load_pygame
-from structures.structure import Structure
 
 
 class Zombio:
@@ -35,6 +31,7 @@ class Zombio:
 
         # Setup
         pygame.init()
+        self.font = pygame.font.Font(None, 74)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # , pygame.FULLSCREEN
         pygame.display.set_caption('Zombio')
         self.clock = pygame.time.Clock()
@@ -42,6 +39,8 @@ class Zombio:
         # Flags
         self.running = True
         self.freeze = False
+        self.paused = False
+        self.in_menu = True
         self.left = False
         self.mid = False
         self.right = False
@@ -89,7 +88,14 @@ class Zombio:
         self.selected_skill_index = 1
         self.skill_list = []
 
+        self.selected_item = 0
+        self.selected_menu_item = 0
+
         self.spawn_manager = SpawnManager()
+
+        self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        self.overlay.set_alpha(128)
+        self.overlay.fill((0, 0, 0))
 
     def start(self) -> None:
         """
@@ -100,13 +106,20 @@ class Zombio:
 
         while self.running:
             self.check_event()
-            if not self.freeze:
-                self.current_world.start()
-                self.update_objects()
-                self.update_screen()
-            elif self.freeze:
-                self.freeze_update()
-                self.skill_pick()
+
+            if self.in_menu:
+                self.update_menu()
+            if not self.in_menu:
+                if not self.paused:
+                    if not self.freeze:
+                        self.current_world.start()
+                        self.update_objects()
+                        self.update_screen()
+                    elif self.freeze:
+                        self.freeze_update()
+                        self.skill_pick()
+                if self.paused:
+                    self.update_screen()
 
     def check_event(self) -> None:
         """
@@ -122,7 +135,7 @@ class Zombio:
                 if event.key == pygame.K_q:
                     sys.exit()
                 if event.key == pygame.K_ESCAPE:
-                    self.player.take_damage(1)
+                    self.paused = not self.paused
                 if event.key == pygame.K_l:
                     self.player.gain_experience(10)
                 if self.freeze:
@@ -143,8 +156,38 @@ class Zombio:
                             self.mid = True
                         elif self.selected_skill_index == 2:
                             self.right = True
+                if self.paused:
+                    if event.key == pygame.K_w:
+                        self.selected_item = (self.selected_item - 1) % 2
+                    elif event.key == pygame.K_s:
+                        self.selected_item = (self.selected_item + 1) % 2
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_item == 0:
+                            self.paused = False
+                        elif self.selected_item == 1:
+                            sys.exit()
+                if self.in_menu:
+                    if event.key == pygame.K_w:
+                        self.selected_menu_item = (self.selected_menu_item - 1) % 2
+                    elif event.key == pygame.K_s:
+                        self.selected_menu_item = (self.selected_menu_item + 1) % 2
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_menu_item == 0:
+                            self.in_menu = False
+                        elif self.selected_menu_item == 1:
+                            sys.exit()
+                if self.player.end_game:
+                    if event.key == pygame.K_w:
+                        self.selected_item = (self.selected_item - 1) % 2
+                    elif event.key == pygame.K_s:
+                        self.selected_item = (self.selected_item + 1) % 2
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_item == 0:
+                            self.in_menu = True
+                        elif self.selected_item == 1:
+                            sys.exit()
 
-    def player_range_attack(self):  # Temporary
+    def player_range_attack(self):
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_shot = current_time - self.last_shot_time
         if time_since_last_shot >= 1 / self.player.attack_speed:
@@ -252,8 +295,8 @@ class Zombio:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
             enemy.movement(structures=self.structures)
-        #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
-        #    self.player_range_attack()
+        if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
+            self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
@@ -273,6 +316,29 @@ class Zombio:
         self.health_bar.draw()
         self.exp_bar.draw()
         self.ui_graphic.draw()
+        if self.paused or self.player.end_game:
+            self.screen.blit(self.overlay, (0, 0))
+
+            paused_rect = PAUSED_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 300))
+            exit_rect = EXIT_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 220))
+            return_rect = RETURN_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120))
+
+            if self.selected_item == 1:
+                exit_rect = EXIT_WHITE_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 220))
+                self.screen.blit(EXIT_WHITE_IMAGE, exit_rect.topleft)
+                self.screen.blit(RETURN_IMAGE, return_rect.topleft)
+            elif self.selected_item == 0:
+                return_rect = RETURN_WHITE_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120))
+                self.screen.blit(EXIT_IMAGE, exit_rect.topleft)
+                self.screen.blit(RETURN_WHITE_IMAGE, return_rect.topleft)
+
+            if not self.player.end_game:
+                self.screen.blit(PAUSED_IMAGE, paused_rect.topleft)
+
+        if self.player.end_game:
+            game_over_text = self.font.render('GAME OVER', True, (0, 0, 0))
+            game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 200))
+            self.screen.blit(game_over_text, game_over_rect.topleft)
 
         pygame.display.update()
         self.clock.tick(60)
@@ -283,6 +349,29 @@ class Zombio:
             skill_box.draw()
         pygame.display.update()
         self.clock.tick(60)
+
+    def update_menu(self):
+
+        self.screen.blit(MENU_IMAGE, (0, 0))
+        self.screen.blit(self.overlay, (0, 0))
+
+        zombio_rect = ZOMBIO_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 300))
+        start_rect = START_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120))
+        exit_rect = EXIT_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 220))
+
+        if self.selected_menu_item == 1:
+            exit_rect = EXIT_WHITE_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 220))
+            self.screen.blit(EXIT_WHITE_IMAGE, exit_rect.topleft)
+            self.screen.blit(START_IMAGE, start_rect.topleft)
+
+        elif self.selected_menu_item == 0:
+            start_rect = START_WHITE_IMAGE.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120))
+            self.screen.blit(EXIT_IMAGE, exit_rect.topleft)
+            self.screen.blit(START_WHITE_IMAGE, start_rect.topleft)
+
+        self.screen.blit(ZOMBIO_IMAGE, zombio_rect.topleft)
+
+        pygame.display.update()
 
 
 if __name__ == '__main__':

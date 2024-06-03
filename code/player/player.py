@@ -27,7 +27,6 @@ class Player(Object):
         self.damage = PLAYER_DAMAGE
         self.ranged_damage = PLAYER_RANGED_DAMAGE
         self.melee_damage = PLAYER_MELEE_DAMAGE
-        self.engineer_damage = PLAYER_ENGINEER_DAMAGE
         self.health = PLAYER_HEALTH
         self.health_max = PLAYER_MAX_HEALTH
         self.target_health = PLAYER_MAX_HEALTH
@@ -38,6 +37,7 @@ class Player(Object):
         self.frame_rate = 10
         self.current_frame = 0
         self.last_update_time = pygame.time.get_ticks()
+        self.end_game = False
         self.not_moving = True
 
     def input(self):
@@ -73,6 +73,7 @@ class Player(Object):
             self.target_health -= amount
         else:
             self.target_health = 0
+            self.end_game = True
 
     def collide_with_structures(self, structures):
         for structure in structures:
@@ -108,4 +109,3 @@ class Player(Object):
             self.image = pygame.transform.scale(self.image, (128, 128))
             self.mask = pygame.mask.from_surface(self.image)
             self.last_update_time = current_time
-

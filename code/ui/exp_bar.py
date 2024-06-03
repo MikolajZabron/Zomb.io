@@ -7,7 +7,7 @@ class ExperienceBar(UserInterfaceElement):
     def __init__(self, player: Player):
         super().__init__()
         self.player = player
-        self.transition_speed = BAR_TRANSITION_SPEED
+        self.transition_speed = EXP_BAR_TRANSITION_SPEED
         self.screen = pygame.display.get_surface()
         self.exp_ratio = SCREEN_WIDTH / PLAYER_EXPERIENCE_NEED
 
