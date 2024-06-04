@@ -57,6 +57,7 @@ class Zombio:
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.skills = pygame.sprite.Group()
+        self.player_attacks = pygame.sprite.Group()
         self.enemy_attacks = pygame.sprite.Group()
         self.map_borders = pygame.sprite.Group()
         self.spawn_points = pygame.sprite.Group()
@@ -64,7 +65,8 @@ class Zombio:
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE, (self.ground, self.decorations, self.structures,
-                                                           self.enemies, self.enemy_attacks, self.bullets, self.skills))
+                                                           self.enemies, self.enemy_attacks, self.bullets, self.skills,
+                                                           self.player_attacks))
         self.player = Player((-100, 0), (self.all_sprites, self.camera_group), PLAYER_ANIMATION)
         self.spawn_range = CollisionBoundary((0, 0), 300, 300, ())
         self.health_bar = HealthBar(self.player)
@@ -216,7 +218,7 @@ class Zombio:
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_shot = current_time - self.last_shot_time
         if time_since_last_shot >= 1 / self.player.attack_speed:
-            melee = Melee(self.player.rect.center, self.camera_group)
+            melee = Melee(self.player, whom, (self.camera_group, self.player_attacks))
             self.last_shot_time = current_time
             if not melee.dealt_damage:
                 whom.take_damage(self.player.damage, self.player)
@@ -320,13 +322,12 @@ class Zombio:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
             enemy.movement(structures=self.structures, borders=self.map_borders, grid=grid)
-        if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
-            self.player_range_attack()
+        #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
+        #    self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
         self.player.update(self.structures, self.map_borders)
-        # Update anti spawn range to be at player position
         self.spawn_range.rect.center = self.player.rect.center
         self.health_bar.update()
         self.exp_bar.update()
