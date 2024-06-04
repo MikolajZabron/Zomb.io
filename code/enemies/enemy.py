@@ -59,7 +59,7 @@ class Enemy(Object):
         self.health: int = health
         self.speed: int = speed
         self.attack_power: int = attack_power
-        self.exp: int = 20
+        self.exp: int = 10
 
         self.movement_direction: pygame.math.Vector2 = pygame.math.Vector2()
 
