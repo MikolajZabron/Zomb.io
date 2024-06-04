@@ -51,7 +51,7 @@ class RiotEnemy(Enemy):
         if pygame.sprite.collide_mask(self, player):
             player.take_damage(self.attack_power)
 
-    def movement(self, structures=None, borders=None):
+    def movement(self, structures=None, borders=None, grid=None):
         self.old_x, self.old_y = self.rect.center
         self.rect.move_ip(self.movement_direction)
         if borders:

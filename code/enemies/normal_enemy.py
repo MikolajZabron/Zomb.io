@@ -9,6 +9,7 @@ class RegularEnemy(Enemy):
                  image=ENEMY_TEMPLATE_IMAGE):
         super().__init__(groups, position, speed, health, attack_power, animation_frames)
         self.movement_direction = Vector2(0, 0)
+        self.tile_size = 32
 
     def calculate_movement(self, player_pos: Vector2):
         direction_vector = pygame.math.Vector2(player_pos.x - self.rect.x,
@@ -22,13 +23,15 @@ class RegularEnemy(Enemy):
         if pygame.sprite.collide_mask(self, player):
             player.take_damage(self.attack_power)
 
-    def movement(self, structures=None, borders=None):
+    def movement(self, structures=None, borders=None, grid=None):
         self.old_x, self.old_y = self.rect.center
         self.rect.move_ip(self.movement_direction)
         if borders:
             self.collide_with_map_border(borders)
         if structures:
             self.collide_with_structures(structures)
+        if grid:
+            self.separate_from_other_enemies(grid)
         self.update_animation()
 
     def collide_with_structures(self, structures):

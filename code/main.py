@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 from math import sqrt
 import random
 
@@ -290,6 +291,13 @@ class Zombio:
 
         return closest_enemy, closest_distance
 
+    def update_grid(self):
+        grid = defaultdict(list)
+        for enemy in self.enemies:
+            tile_pos = enemy.tile_position(enemy.rect.center)
+            grid[tile_pos].append(enemy)
+        return grid
+
     def collision(self):
         for bullet in self.bullets:
             bullet.collision(self.enemies, self.player.damage, self.player)
@@ -302,6 +310,7 @@ class Zombio:
         :return: None
 
         """
+        grid = self.update_grid()
         self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group), self.spawn_range)
         self.collision()
         for enemy in self.enemies:
@@ -310,7 +319,7 @@ class Zombio:
                              (self.all_sprites, self.enemy_attacks, self.camera_group))
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
-            enemy.movement(structures=self.structures, borders=self.map_borders)
+            enemy.movement(structures=self.structures, borders=self.map_borders, grid=grid)
         if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
             self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
