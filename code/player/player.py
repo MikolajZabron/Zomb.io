@@ -107,7 +107,7 @@ class Player(Object):
         self.bullet_range = PLAYER_BULLET_RANGE
         self.range = 1
         self.ranged_weapons = 1
-        self.melee_weapons = 1
+        self.melee_weapons = 0
 
         # Animation stuff
         self.frame_rate = 10

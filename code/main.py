@@ -32,6 +32,7 @@ class Zombio:
 
         # Setup
         pygame.init()
+        pygame.mixer.init()
         self.font = pygame.font.Font(None, 74)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # , pygame.FULLSCREEN
         pygame.display.set_caption('Zombio')
@@ -48,7 +49,27 @@ class Zombio:
         self.flag1 = True
         self.flag2 = True
 
+        pygame.mixer.set_num_channels(3)
         tmx_data = load_pygame("new_map/data/map/new_map.tmx")
+        self.main_song = pygame.mixer.Sound('images/Sounds/short-game-music-loop-38898.mp3')
+        self.slash = pygame.mixer.Sound('images/Sounds/axe-slash-1-106748.mp3')
+        self.skill_pick_sound = pygame.mixer.Sound('images/Sounds/collect-points-190037.mp3')
+        self.start_game = pygame.mixer.Sound('images/Sounds/game-start-6104.mp3')
+        self.game_over_sound = pygame.mixer.Sound('images/Sounds/game-over-arcade-6435.mp3')
+        self.menu_song = pygame.mixer.Sound('images/Sounds/crime-sound-loop-28873.mp3')
+        self.knife = pygame.mixer.Sound('images/Sounds/sword-sound-2-36274.mp3')
+        self.shot = pygame.mixer.Sound('images/Sounds/086409_retro-gun-shot-81545.mp3')
+
+        self.song_channel = pygame.mixer.Channel(0)
+        self.sound_player_channel = pygame.mixer.Channel(1)
+        self.sound_ui_channel = pygame.mixer.Channel(2)
+
+        self.main_song.set_volume(0.5)
+        self.shot.set_volume(0.3)
+
+        self.sound_player_channel.set_volume(0.2)
+        self.sound_ui_channel.set_volume(0.5)
+        self.song_channel.set_volume(0.4)
 
         self.all_sprites = pygame.sprite.Group()
         self.ground = pygame.sprite.Group()
@@ -118,6 +139,8 @@ class Zombio:
         self.overlay.set_alpha(128)
         self.overlay.fill((0, 0, 0))
 
+        self.song_channel.play(self.menu_song, loops=-1)
+
     def start(self) -> None:
         """
         Main game loop
@@ -162,16 +185,19 @@ class Zombio:
                     self.player.gain_experience(10)
                 if self.freeze:
                     if event.key == pygame.K_a:
+                        self.sound_ui_channel.play(self.slash)
                         for skill in self.skills:
                             skill.selected = False
                         self.selected_skill_index = (self.selected_skill_index - 1) % len(self.skill_list)
                         self.skills.sprites()[self.selected_skill_index].selected = True
                     elif event.key == pygame.K_d:
+                        self.sound_ui_channel.play(self.slash)
                         for skill in self.skills:
                             skill.selected = False
                         self.selected_skill_index = (self.selected_skill_index + 1) % len(self.skill_list)
                         self.skills.sprites()[self.selected_skill_index].selected = True
                     elif event.key == pygame.K_RETURN:
+                        self.sound_ui_channel.play(self.skill_pick_sound)
                         if self.selected_skill_index == 0:
                             self.left = True
                         if self.selected_skill_index == 1:
@@ -180,30 +206,40 @@ class Zombio:
                             self.right = True
                 if self.paused:
                     if event.key == pygame.K_w:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_item = (self.selected_item - 1) % 2
                     elif event.key == pygame.K_s:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_item = (self.selected_item + 1) % 2
                     elif event.key == pygame.K_RETURN:
+                        self.sound_ui_channel.play(self.skill_pick_sound)
                         if self.selected_item == 0:
                             self.paused = False
                         elif self.selected_item == 1:
                             sys.exit()
                 if self.in_menu:
                     if event.key == pygame.K_w:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_menu_item = (self.selected_menu_item - 1) % 2
                     elif event.key == pygame.K_s:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_menu_item = (self.selected_menu_item + 1) % 2
                     elif event.key == pygame.K_RETURN:
                         if self.selected_menu_item == 0:
                             self.in_menu = False
+                            self.sound_ui_channel.play(self.start_game)
+                            self.song_channel.play(self.main_song, loops=-1)
                         elif self.selected_menu_item == 1:
                             sys.exit()
                 if self.player.end_game:
                     if event.key == pygame.K_w:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_item = (self.selected_item - 1) % 2
                     elif event.key == pygame.K_s:
+                        self.sound_ui_channel.play(self.slash)
                         self.selected_item = (self.selected_item + 1) % 2
                     elif event.key == pygame.K_RETURN:
+                        self.sound_ui_channel.play(self.skill_pick_sound)
                         if self.selected_item == 0:
                             self.in_menu = True
                         elif self.selected_item == 1:
@@ -216,16 +252,18 @@ class Zombio:
             bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy()[0].rect.center,
                                     (self.all_sprites, self.bullets, self.camera_group))
             self.last_shot_time = current_time
+            self.sound_player_channel.play(self.shot)
 
     def player_melee_attack(self, whom):
         current_time = pygame.time.get_ticks() / 1000
-        self.last_hit_time = current_time - self.last_hit_time
-        if self.last_hit_time >= 1 / self.player.attack_speed / self.player.melee_weapons:
+        time_since_last_hit = current_time - self.last_hit_time
+        if time_since_last_hit >= 1 / self.player.attack_speed / self.player.melee_weapons:
             melee = Melee(self.player, whom, (self.camera_group, self.player_attacks))
             self.last_hit_time = current_time
             if not melee.dealt_damage:
                 whom.take_damage(self.player.damage + self.player.melee_damage, self.player)
             melee.deal_damage()
+            self.sound_player_channel.play(self.knife)
 
     def player_level_up(self):
         if self.player.target_exp >= self.player.exp_need:
@@ -346,8 +384,9 @@ class Zombio:
         if self.player.ranged_weapons != 0:
             if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
                 self.player_range_attack()
-        if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
-            self.player_melee_attack(self.nearest_enemy()[0])
+        if self.player.melee_weapons != 0:
+            if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
+                self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
         self.player.update(self.structures, self.map_borders)
         self.spawn_range.rect.center = self.player.rect.center
@@ -386,6 +425,7 @@ class Zombio:
                 self.screen.blit(PAUSED_IMAGE, paused_rect.topleft)
 
         if self.player.end_game:
+            self.sound_ui_channel.play(self.game_over_sound)
             game_over_text = self.font.render('GAME OVER', True, (0, 0, 0))
             game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 200))
 
