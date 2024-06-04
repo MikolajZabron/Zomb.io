@@ -13,11 +13,11 @@ ANIMATION_SPEED = 6
 PLAYER_IMAGE = pygame.image.load(join('images', 'character_new_version.png'))
 PLAYER_ANIMATION = [pygame.image.load(join('images', 'main_character', f'character1wersja1chodzenie{i}.png'))
                     for i in range(9)]
-PLAYER_EXPERIENCE = 0
+PLAYER_EXPERIENCE = 90
 PLAYER_EXPERIENCE_NEED = 100
 PLAYER_LEVEL = 1
 PLAYER_SPEED = 4
-PLAYER_ATTACK_SPEED = 1
+PLAYER_ATTACK_SPEED = 0.8
 PLAYER_DAMAGE = 5
 PLAYER_HEALTH = 50
 PLAYER_MAX_HEALTH = 50

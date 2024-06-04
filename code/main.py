@@ -73,6 +73,7 @@ class Zombio:
         self.exp_bar = ExperienceBar(self.player)
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
         self.skill_boxes = []
+        self.skills = pygame.sprite.Group()
 
         # Calculate map dimensions and offset
         map_width = tmx_data.width * tmx_data.tilewidth
@@ -104,6 +105,7 @@ class Zombio:
                                   (self.camera_group, self.spawn_points))
 
         self.last_shot_time = 0
+        self.last_hit_time = 0
         self.selected_skill_index = 1
         self.skill_list = []
 
@@ -130,14 +132,15 @@ class Zombio:
                 self.update_menu()
             if not self.in_menu:
                 if not self.paused:
-                    if not self.freeze:
-                        self.current_world.start()
-                        self.update_objects()
-                        self.update_screen()
-                    elif self.freeze:
-                        self.freeze_update()
-                        self.skill_pick()
-                if self.paused:
+                    if not self.player.end_game:
+                        if not self.freeze:
+                            self.current_world.start()
+                            self.update_objects()
+                            self.update_screen()
+                        elif self.freeze:
+                            self.update_screen()
+                            self.skill_pick()
+                if self.paused or self.player.end_game:
                     self.update_screen()
 
     def check_event(self) -> None:
@@ -209,19 +212,19 @@ class Zombio:
     def player_range_attack(self):
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_shot = current_time - self.last_shot_time
-        if time_since_last_shot >= 1 / self.player.attack_speed:
+        if time_since_last_shot >= 1 / self.player.attack_speed / self.player.ranged_weapons:
             bullet = BulletTemplate(self.player.rect.center, self.nearest_enemy()[0].rect.center,
                                     (self.all_sprites, self.bullets, self.camera_group))
             self.last_shot_time = current_time
 
     def player_melee_attack(self, whom):
         current_time = pygame.time.get_ticks() / 1000
-        time_since_last_shot = current_time - self.last_shot_time
-        if time_since_last_shot >= 1 / self.player.attack_speed:
+        self.last_hit_time = current_time - self.last_hit_time
+        if self.last_hit_time >= 1 / self.player.attack_speed / self.player.melee_weapons:
             melee = Melee(self.player, whom, (self.camera_group, self.player_attacks))
-            self.last_shot_time = current_time
+            self.last_hit_time = current_time
             if not melee.dealt_damage:
-                whom.take_damage(self.player.damage, self.player)
+                whom.take_damage(self.player.damage + self.player.melee_damage, self.player)
             melee.deal_damage()
 
     def player_level_up(self):
@@ -232,7 +235,7 @@ class Zombio:
 
     def skill_draw(self):
 
-        while self.flag1:
+        if self.flag1:
             self.skill_list = []
             while len(self.skill_list) < 3:
                 skill = self.skill_lottery()
@@ -257,27 +260,45 @@ class Zombio:
             self.player.skill_choice(self.skill_list[0])
             self.skills.empty()
             self.freeze = False
+            self.selected_skill_index = 0
+            self.flag1 = True
         if self.mid:
             self.mid = False
             self.skills.sprites()[1].selected = True
             self.player.skill_choice(self.skill_list[1])
             self.skills.empty()
             self.freeze = False
+            self.selected_skill_index = 0
+            self.flag1 = True
         if self.right:
             self.right = False
             self.skills.sprites()[2].selected = True
             self.player.skill_choice(self.skill_list[2])
             self.skills.empty()
             self.freeze = False
+            self.selected_skill_index = 0
+            self.flag1 = True
 
     def skill_lottery(self):
-        i = random.randint(1, 3)
+        i = random.randint(1, 9)
         if i == 1:
-            return "adbuff"
+            return "ranged_weapon"
         elif i == 2:
-            return "new_weapon"
+            return "melee_weapon"
         elif i == 3:
             return "hp_max"
+        elif i == 4:
+            return "hp_res"
+        elif i == 5:
+            return "melee_dmg"
+        elif i == 6:
+            return "range_dmg"
+        elif i == 7:
+            return "range"
+        elif i == 8:
+            return "speed"
+        elif i == 9:
+            return "atk_speed"
 
     def nearest_enemy(self):
         closest_enemy = None
@@ -322,8 +343,9 @@ class Zombio:
             enemy.calculate_movement(pygame.Vector2(self.player.rect.x, self.player.rect.y))
             enemy.check_collision(self.player, self.structures)
             enemy.movement(structures=self.structures, borders=self.map_borders, grid=grid)
-        #if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
-        #    self.player_range_attack()
+        if self.player.ranged_weapons != 0:
+            if self.nearest_enemy()[0] and self.player.bullet_range > self.nearest_enemy()[1]:
+                self.player_range_attack()
         if self.nearest_enemy()[0] and self.player.melee_range > self.nearest_enemy()[1]:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
@@ -366,15 +388,16 @@ class Zombio:
         if self.player.end_game:
             game_over_text = self.font.render('GAME OVER', True, (0, 0, 0))
             game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 200))
+
+            game_over_score = self.font.render(f'SCORE : {self.player.whole_exp}', True, (0, 0, 0))
+            game_over_rect2 = game_over_score.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 100))
             self.screen.blit(game_over_text, game_over_rect.topleft)
+            self.screen.blit(game_over_score, game_over_rect2.topleft)
 
-        pygame.display.update()
-        self.clock.tick(60)
+        if self.freeze:
+            for skill_box in self.skills.sprites():
+                skill_box.draw()
 
-    def freeze_update(self):
-        self.camera_group.custom_draw(self.player)
-        for skill_box in self.skills.sprites():
-            skill_box.draw()
         pygame.display.update()
         self.clock.tick(60)
 

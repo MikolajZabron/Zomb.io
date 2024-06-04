@@ -15,7 +15,7 @@ class BulletTemplate(Object):
 
     def collision(self, group, damage, player):
         for enemy in pygame.sprite.spritecollide(self, group, False):
-            enemy.take_damage(damage, player)
+            enemy.take_damage(damage + player.ranged_damage, player)
             self.kill()
 
     def update(self):  # temporary to change

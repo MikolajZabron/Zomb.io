@@ -21,6 +21,7 @@ class Player(Object):
         self.target_exp = PLAYER_EXPERIENCE
         self.exp_need = PLAYER_EXPERIENCE_NEED
         self.level = PLAYER_LEVEL
+        self.whole_exp = 0
 
         # Statistics
         self.speed = PLAYER_SPEED
@@ -33,6 +34,9 @@ class Player(Object):
         self.target_health = PLAYER_MAX_HEALTH
         self.melee_range = PLAYER_MELEE_RANGE
         self.bullet_range = PLAYER_BULLET_RANGE
+        self.range = 1
+        self.ranged_weapons = 1
+        self.melee_weapons = 1
 
         # Animation stuff
         self.frame_rate = 10
@@ -93,6 +97,7 @@ class Player(Object):
 
     def gain_experience(self, amount):
         self.target_exp += amount
+        self.whole_exp += amount
 
     def level_up(self):
         self.exp -= self.exp_need
@@ -101,7 +106,64 @@ class Player(Object):
         self.exp_need *= 1.2
 
     def skill_choice(self, i):
-        print(i)
+        if i == "ranged_weapon":  # Add new ranged weapon
+            self.add_range()
+        if i == "melee_weapon":  # Add new melee weapon
+            self.add_melee()
+        if i == "hp_max":  # Increase maximum hp
+            self.raise_hp()
+        if i == "hp_res":  # Restores missing health
+            self.restore_hp()
+        if i == "melee_dmg":  # Increase damage done by melee weapons
+            self.raise_melee_dmg()
+        if i == "range_dmg":  # Increase damage done by range weapons
+            self.raise_range_dmg()
+        if i == "range":  # Increase player range
+            self.raise_range()
+        if i == "speed":  # Increase player speed
+            self.raise_speed()
+        if i == "atk_speed":  # Increase attack speed
+            self.raise_atk_speed()
+
+    def raise_hp(self):
+        print(self.health_max)
+        self.health_max += self.health_max * 0.2
+        self.target_health += self.health_max * 0.2
+        print(self.health_max)
+
+    def restore_hp(self):
+        self.target_health += self.health_max * 0.5
+
+    def raise_melee_dmg(self):
+        print(self.melee_damage)
+        self.melee_damage += 2
+        print(self.melee_damage)
+
+    def raise_range_dmg(self):
+        print(self.ranged_damage)
+        self.ranged_damage += 2
+        print(self.ranged_damage)
+
+    def raise_range(self):
+        print(self.range)
+        self.range += 2
+        print(self.range)
+
+    def raise_speed(self):
+        print(self.speed)
+        self.speed += self.speed * 0.2
+        print(self.speed)
+
+    def raise_atk_speed(self):
+        print(self.attack_speed)
+        self.attack_speed += self.attack_speed * 0.2
+        print(self.attack_speed)
+
+    def add_range(self):
+        self.ranged_weapons += 1
+
+    def add_melee(self):
+        self.melee_weapons += 1
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
