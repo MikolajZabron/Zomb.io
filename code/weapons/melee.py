@@ -3,7 +3,19 @@ from utilities.graphical_object import Object
 
 
 class Melee(Object):
+    """
+    Represents a melee attack in the game.
+    """
+
     def __init__(self, player, enemy, groups):
+        """
+        Initializes a Melee object.
+
+        Args:
+            player (Player): The player object initiating the melee attack.
+            enemy (Enemy): The enemy being attacked.
+            groups (tuple): The groups to which the melee object belongs.
+        """
         super().__init__(groups)
         self.image = MELEE_TEMPLATE
         self.original_ratio = self.image.get_width() / self.image.get_height()
@@ -26,18 +38,41 @@ class Melee(Object):
         self.rect.centery += offset_y
 
     def deal_damage(self):
+        """
+        Marks that damage has been dealt by the melee attack.
+        """
         self.dealt_damage = True
 
     def draw(self):
+        """
+        Draws the melee attack on the screen.
+        """
         self.screen.blit(self.image, self.rect)
 
     def update(self, *args, **kwargs):
+        """
+        Updates the melee attack.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         current_time = pygame.time.get_ticks()
+        # If the melee attack has been active for more than 250ms and has dealt damage, it is removed
         if current_time - self.creation_time >= 250 and self.deal_damage:
-            print("kill")
             self.kill()
 
     def calculate_angle(self, player_pos, enemy_pos):
+        """
+        Calculates the angle between the player and the enemy.
+
+        Args:
+            player_pos (tuple): The position of the player.
+            enemy_pos (tuple): The position of the enemy.
+
+        Returns:
+            float: The angle between the player and the enemy.
+        """
         # Calculate the angle between the player and the enemy
         dx = enemy_pos[0] - player_pos[0]
         dy = enemy_pos[1] - player_pos[1]

@@ -4,7 +4,45 @@ from utilities.settings import *
 
 
 class Enemy(Object):
+    """
+    Represents an enemy entity within the game.
+
+    This class inherits from Object and defines behavior specific to enemy entities, such as movement, attacking,
+    and interactions with other game objects.
+
+    Attributes:
+        position (pygame.math.Vector2): The initial position of the enemy.
+        speed (int): The speed of the enemy's movement.
+        health (int): The current health points of the enemy.
+        attack_power (int): The attack power of the enemy.
+        animation_frames (list): List of frames for enemy animation.
+
+    Methods:
+        __init__(groups, position, speed, health, attack_power, animation_frames): Constructor method for Enemy class.
+        update(): Updates the state of the enemy.
+        calculate_movement(player_pos): Calculates movement direction towards the player.
+        movement(): Moves the enemy based on calculated movement direction.
+        damage_player(): Inflicts damage to the player.
+        check_collision(player, structures): Checks collision with player and structures.
+        take_damage(amount, player): Reduces enemy health when attacked by the player.
+        draw(): Draws the enemy on the screen.
+        update_animation(): Updates the animation frames of the enemy.
+        separate_from_other_enemies(grid): Moves the enemy away from nearby enemies to avoid overlapping.
+        tile_position(position): Returns the tile position of the given pixel position.
+    """
+
     def __init__(self, groups, position: Vector2, speed, health: int, attack_power: int, animation_frames):
+        """
+        Constructor method for the Enemy class.
+
+        Args:
+            groups (pygame.sprite.AbstractGroup): The groups to which this enemy belongs.
+            position (pygame.math.Vector2): The initial position of the enemy.
+            speed (int): The speed of the enemy's movement.
+            health (int): The current health points of the enemy.
+            attack_power (int): The attack power of the enemy.
+            animation_frames (list): List of frames for enemy animation.
+        """
         super().__init__(groups)
         self.animation_frames = animation_frames
         self.position: Vector2 = position
@@ -32,30 +70,44 @@ class Enemy(Object):
         self.tile_size = 32
 
     def update(self):
+        """Updates the state of the enemy."""
         pass
 
     def calculate_movement(self, player_pos: Vector2):
+        """Calculates movement direction towards the player."""
         pass
 
     def movement(self):
+        """Moves the enemy based on calculated movement direction."""
         pass
 
     def damage_player(self):
+        """Inflicts damage to the player."""
         pass
 
     def check_collision(self, player, structures):
+        """Checks collision with player and structures."""
         pass
 
     def take_damage(self, amount, player):
+        """
+        Reduces enemy health when attacked by the player.
+
+        Args:
+            amount (int): The amount of damage inflicted.
+            player: The player object inflicting the damage.
+        """
         self.health -= amount
         if self.health <= 0:
             self.kill()
             player.gain_experience(self.exp)
 
     def draw(self):
+        """Draws the enemy on the screen."""
         self.screen.blit(self.image, self.rect)
 
     def update_animation(self):
+        """Updates the animation frames of the enemy."""
         current_time = pygame.time.get_ticks()
         if current_time - self.last_update_time > 1000 // self.frame_rate:
             self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
@@ -65,6 +117,12 @@ class Enemy(Object):
             self.last_update_time = current_time
 
     def separate_from_other_enemies(self, grid):
+        """
+        Moves the enemy away from nearby enemies to avoid overlapping.
+
+        Args:
+            grid (dict): A grid containing positions of other enemies.
+        """
         separation_distance = 15
         separation_force = Vector2(0, 0)
         tile_x, tile_y = self.tile_position(self.rect.center)
@@ -85,4 +143,13 @@ class Enemy(Object):
             self.rect.move_ip(separation_force)
 
     def tile_position(self, position):
+        """
+        Returns the tile position of the given pixel position.
+
+        Args:
+            position (tuple): The pixel position (x, y) to convert.
+
+        Returns:
+            tuple: The tile position (x, y).
+        """
         return int(position[0] // self.tile_size), int(position[1] // self.tile_size)

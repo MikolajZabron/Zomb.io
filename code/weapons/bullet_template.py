@@ -3,7 +3,19 @@ from utilities.graphical_object import Object
 
 
 class BulletTemplate(Object):
+    """
+    Represents a template for bullets fired in the game.
+    """
+
     def __init__(self, position, destination, groups):
+        """
+        Initializes a BulletTemplate object.
+
+        Args:
+            position (tuple): The initial position of the bullet.
+            destination (tuple): The destination position of the bullet.
+            groups (tuple): The groups to which the bullet belongs.
+        """
         super().__init__(groups)
         self.image = BULLET_TEMPLATE_IMAGE.convert_alpha()
         self.image = pygame.transform.scale(self.image, (10, 10))
@@ -14,11 +26,23 @@ class BulletTemplate(Object):
         self.speed = BULLET_SPEED
 
     def collision(self, group, damage, player):
+        """
+        Checks for collision between the bullet and a group of sprites.
+
+        Args:
+            group (pygame.sprite.Group): The group of sprites to check for collision.
+            damage (int): The damage inflicted by the bullet.
+            player (Player): The player object.
+
+        """
         for enemy in pygame.sprite.spritecollide(self, group, False):
             enemy.take_damage(damage + player.ranged_damage, player)
             self.kill()
 
-    def update(self):  # temporary to change
+    def update(self):
+        """
+        Updates the bullet's position.
+        """
         direction = pygame.math.Vector2(self.destination[0] - self.rect.centerx,
                                         self.destination[1] - self.rect.centery)
         if direction.length() > 0:
@@ -32,4 +56,7 @@ class BulletTemplate(Object):
             self.kill()
 
     def draw(self):
+        """
+        Draws the bullet on the screen.
+        """
         self.screen.blit(self.image, self.rect)
