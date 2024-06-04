@@ -82,7 +82,8 @@ WAVE_TYPES = [
 PREDEFINED_WAVES = [
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [2], "duration": 10.0},
     {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [3], "duration": 10.0},
-    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [4], "duration": 10.0}
+    {"enemy_types": ["regular"], "spawn_rates": [3.0], "spawn_numbers": [4], "duration": 10.0},
+    {"enemy_types": ["police", "regular"], "spawn_rates": [3.0, 4.0], "spawn_numbers": [2, 2], "duration": 10.0}
 ]
 
 # Zombie mutation

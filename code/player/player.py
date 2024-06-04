@@ -8,7 +8,8 @@ class Player(Object):
         super().__init__(groups)
         self.animation_frames: list = animation_frames
         self.image = self.animation_frames[0].convert_alpha()
-        self.image = pygame.transform.scale(self.image, (32, 32))
+        self.original_ratio = self.image.get_width() / self.image.get_height()
+        self.image = pygame.transform.scale(self.image, (24, 24/self.original_ratio))
         self.rect = self.image.get_rect(center=position)
         self.old_x = 0
         self.old_y = 0
@@ -83,8 +84,8 @@ class Player(Object):
                 self.rect.center = self.old_x, self.old_y
 
     def collide_with_map_borders(self, borders):
-        if ((self.rect.x < 629 - 1600) or (self.rect.x > 2568 - 1600) or (self.rect.y < 471 - 1200) or
-                (self.rect.y > 1928 - 1200)):
+        if ((self.rect.x < 620 - 1600) or (self.rect.x > 2550 - 1600) or (self.rect.y < 460 - 1200) or
+                (self.rect.y > 1875 - 1200)):
             self.rect.center = self.old_x, self.old_y
         for border in borders:
             if pygame.sprite.collide_mask(self, border):
@@ -111,11 +112,11 @@ class Player(Object):
             if current_time - self.last_update_time > 1000 // self.frame_rate:
                 self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
                 self.image = self.animation_frames[self.current_frame].convert_alpha()
-                self.image = pygame.transform.scale(self.image, (32, 32))
+                self.image = pygame.transform.scale(self.image, (24, 24/self.original_ratio))
                 self.mask = pygame.mask.from_surface(self.image)
                 self.last_update_time = current_time
         else:
             self.image = self.animation_frames[0].convert_alpha()
-            self.image = pygame.transform.scale(self.image, (32, 32))
+            self.image = pygame.transform.scale(self.image, (24, 24/self.original_ratio))
             self.mask = pygame.mask.from_surface(self.image)
             self.last_update_time = current_time
