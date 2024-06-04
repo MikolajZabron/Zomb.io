@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="142">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="170">
  <tileset firstgid="1" source="../../../Map/data/tsx/3.tsx"/>
  <tileset firstgid="2" source="../../../Map/data/tsx/5.tsx"/>
  <tileset firstgid="3" source="../tsx/objects.tsx"/>
@@ -235,5 +235,21 @@
   <object id="139" name="wall" type="Walls" x="2343.5" y="628.875" width="33.875" height="1.375"/>
   <object id="140" name="wall" type="Walls" x="2311.63" y="566.705" width="32" height="1.04545"/>
   <object id="141" name="wall" type="Walls" x="2375.71" y="691.455" width="36.5758" height="1.09091"/>
+  <object id="143" name="spawn" type="spawn" x="656" y="812" width="338.667" height="836"/>
+  <object id="146" name="spawn" type="spawn" x="1000" y="1762" width="1544" height="138"/>
+  <object id="149" name="spawn" type="spawn" x="948" y="497.333" width="1344" height="138.667"/>
+  <object id="151" name="spawn" type="spawn" x="2400" y="813" width="150" height="936"/>
+  <object id="153" name="spawn" type="spawn" x="1857" y="704" width="341" height="256"/>
+  <object id="155" name="spawn" type="spawn" x="1033" y="762" width="571" height="260"/>
+  <object id="157" name="spawn" type="spawn" x="1004" y="1415" width="457" height="253"/>
+  <object id="161" name="spawn" type="spawn" x="1010.67" y="1162.67" width="618.667" height="162.667"/>
+  <object id="162" name="spawn" type="spawn" x="1674" y="1003" width="242" height="236"/>
+  <object id="163" name="spawn" type="spawn" x="1683" y="1270" width="290" height="264"/>
+  <object id="164" name="spawn" type="spawn" x="2063" y="1260" width="302" height="212"/>
+  <object id="165" name="spawn" type="spawn" x="2079" y="1059" width="297" height="137"/>
+  <object id="166" name="spawn" type="spawn" x="1620" y="1614" width="427" height="143"/>
+  <object id="167" name="spawn" type="spawn" x="2157" y="1626" width="204" height="103"/>
+  <object id="168" name="spawn" type="spawn" x="1667.33" y="802" width="140" height="111.333"/>
+  <object id="169" name="spawn" type="spawn" x="1448.67" y="658.667" width="394" height="90.6667"/>
  </objectgroup>
 </map>

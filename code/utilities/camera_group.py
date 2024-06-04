@@ -46,10 +46,6 @@ class CameraGroup(pygame.sprite.Group):
 
         self.center_target_camera(target)
 
-        # Ground
-        # ground_offset = self.ground_rect.topleft - self.offset
-        # self.screen.blit(self.ground_surface, ground_offset)
-
         for group in self.priority_groups:
             for sprite in group:
                 offset_position = sprite.rect.center - self.offset

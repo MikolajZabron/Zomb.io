@@ -1,6 +1,4 @@
 import pygame
-from pygame.math import Vector2
-
 from utilities.graphical_object import Object
 from utilities.settings import BULLET_TEMPLATE_IMAGE
 
@@ -28,7 +26,6 @@ class Projectile(Object):
     def check_collision(self, player):
         if pygame.sprite.collide_mask(self, player):
             player.take_damage(self.damage)
-            print("took damage")
             self.kill()
 
     def draw(self):

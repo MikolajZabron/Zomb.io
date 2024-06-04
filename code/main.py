@@ -58,12 +58,14 @@ class Zombio:
         self.skills = pygame.sprite.Group()
         self.enemy_attacks = pygame.sprite.Group()
         self.map_borders = pygame.sprite.Group()
+        self.spawn_points = pygame.sprite.Group()
 
         # Objects initialization
         self.current_world = World()  # In future used class for now does nothing
         self.camera_group = CameraGroup(BACKGROUND_IMAGE, (self.ground, self.decorations, self.structures,
                                                            self.enemies, self.enemy_attacks, self.bullets, self.skills))
         self.player = Player((-100, 0), (self.all_sprites, self.camera_group), PLAYER_ANIMATION)
+        self.spawn_range = CollisionBoundary((0, 0), 300, 300, ())
         self.health_bar = HealthBar(self.player)
         self.exp_bar = ExperienceBar(self.player)
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
@@ -94,6 +96,10 @@ class Zombio:
             if obj.name == "wall":
                 CollisionBoundary(pos, obj.width, obj.height,
                                   (self.all_sprites, self.camera_group, self.map_borders))
+            if obj.name == "spawn":
+                CollisionBoundary(pos, obj.width, obj.height,
+                                  (self.camera_group, self.spawn_points))
+
         self.last_shot_time = 0
         self.selected_skill_index = 1
         self.skill_list = []
@@ -101,7 +107,7 @@ class Zombio:
         self.selected_item = 0
         self.selected_menu_item = 0
 
-        self.spawn_manager = SpawnManager()
+        self.spawn_manager = SpawnManager(self.spawn_points)
 
         self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.overlay.set_alpha(128)
@@ -296,7 +302,7 @@ class Zombio:
         :return: None
 
         """
-        self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group))
+        self.spawn_manager.check_timers((self.all_sprites, self.enemies, self.camera_group), self.spawn_range)
         self.collision()
         for enemy in self.enemies:
             if isinstance(enemy, PoliceEnemy):
@@ -311,6 +317,8 @@ class Zombio:
             self.player_melee_attack(self.nearest_enemy()[0])
         self.player_level_up()
         self.player.update(self.structures, self.map_borders)
+        # Update anti spawn range to be at player position
+        self.spawn_range.rect.center = self.player.rect.center
         self.health_bar.update()
         self.exp_bar.update()
 

@@ -4,8 +4,9 @@ from utilities.settings import *
 
 
 class SpawnManager:
-    def __init__(self):
+    def __init__(self, spawn_points):
         # Wave Info
+        self.spawn_points = spawn_points
         self.wave_number = 0
         self.time_since_last_wave = 0
         self.mutation_statistic = 0
@@ -23,10 +24,10 @@ class SpawnManager:
             self.current_wave = Wave(**WAVE_TYPES[random_wave_config])
         self.current_wave.mutation_statistic = self.mutation_statistic
 
-    def check_timers(self, groups):
+    def check_timers(self, groups, spawn_range):
         current_time = pygame.time.get_ticks() / 1000
         if current_time - self.time_since_last_wave >= self.current_wave.duration:
             self.wave_number += 1
             self.create_wave()
             self.time_since_last_wave = current_time
-        self.current_wave.update(current_time, groups)
+        self.current_wave.update(current_time, groups, self.spawn_points, spawn_range)
