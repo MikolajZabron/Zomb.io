@@ -1,5 +1,6 @@
 import pygame.sprite
 from player.player import Player
+from player.player_particles import Particle
 
 
 class CameraGroup(pygame.sprite.Group):

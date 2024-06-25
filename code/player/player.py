@@ -106,7 +106,7 @@ class Player(Object):
         self.melee_range = PLAYER_MELEE_RANGE
         self.bullet_range = PLAYER_BULLET_RANGE
         self.range = 1
-        self.ranged_weapons = 1
+        self.ranged_weapons = 0
         self.melee_weapons = 1
 
         # Animation stuff
@@ -140,8 +140,8 @@ class Player(Object):
         Updates the player's position and checks for collisions.
 
         Args:
-            structures: List of structures in the game.
-            borders: List of map borders.
+            structures: Structures Group.
+            borders: Map borders group.
         """
         self.old_x, self.old_y = self.rect.center
         self.input()

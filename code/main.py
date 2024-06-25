@@ -6,6 +6,8 @@ import random
 import pygame
 from pytmx import TiledTileLayer
 from pytmx.util_pygame import load_pygame
+
+from player.player_particles import Particle
 from structures.structure import Structure
 
 from enemies.police_enemy import PoliceEnemy
@@ -25,7 +27,7 @@ from spawnManager.spawn_manager import SpawnManager
 
 class Zombio:
     """
-    Main game class
+    Main game class that initializes and manages the game.
     """
 
     def __init__(self):
@@ -82,11 +84,11 @@ class Zombio:
         self.enemy_attacks = pygame.sprite.Group()
         self.map_borders = pygame.sprite.Group()
         self.spawn_points = pygame.sprite.Group()
+        self.particles = pygame.sprite.Group()
 
-        # Objects initialization
-        self.current_world = World()  # In future used class for now does nothing
+        self.current_world = World()
         self.camera_group = CameraGroup(BACKGROUND_IMAGE, (self.ground, self.decorations, self.structures,
-                                                           self.enemies, self.enemy_attacks, self.bullets, self.skills,
+                                                           self.particles, self.enemies, self.enemy_attacks, self.bullets, self.skills,
                                                            self.player_attacks))
         self.player = Player((-100, 0), (self.all_sprites, self.camera_group), PLAYER_ANIMATION)
         self.spawn_range = CollisionBoundary((0, 0), 300, 300, ())
@@ -95,6 +97,7 @@ class Zombio:
         self.ui_graphic = UIGraphic((SCREEN_WIDTH/2 + 60, SCREEN_HEIGHT - 270))
         self.skill_boxes = []
         self.skills = pygame.sprite.Group()
+
 
         # Calculate map dimensions and offset
         map_width = tmx_data.width * tmx_data.tilewidth
@@ -143,7 +146,7 @@ class Zombio:
 
     def start(self) -> None:
         """
-        Main game loop
+        Main game loop. Controls the flow of the game, updating objects and managing different game states.
 
         :return: None
         """
@@ -168,7 +171,7 @@ class Zombio:
 
     def check_event(self) -> None:
         """
-        Method checking events such as pressed keys
+        Method that handles pygame events such as key presses, controlling game state transitions and actions.
 
         :return: None
         """
@@ -246,6 +249,11 @@ class Zombio:
                             sys.exit()
 
     def player_range_attack(self):
+        """
+        Method to execute the player's ranged attack.
+
+        :return: None
+        """
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_shot = current_time - self.last_shot_time
         if time_since_last_shot >= 1 / self.player.attack_speed / self.player.ranged_weapons:
@@ -255,6 +263,12 @@ class Zombio:
             self.sound_player_channel.play(self.shot)
 
     def player_melee_attack(self, whom):
+        """
+        Method to execute the player's melee attack against a specific enemy.
+
+        :param whom: The enemy to attack
+        :return: None
+        """
         current_time = pygame.time.get_ticks() / 1000
         time_since_last_hit = current_time - self.last_hit_time
         if time_since_last_hit >= 1 / self.player.attack_speed / self.player.melee_weapons:
@@ -266,13 +280,22 @@ class Zombio:
             self.sound_player_channel.play(self.knife)
 
     def player_level_up(self):
+        """
+        Method to handle player level up logic.
+
+        :return: None
+        """
         if self.player.target_exp >= self.player.exp_need:
             self.player.level_up()
             self.freeze = True
             self.skill_draw()
 
     def skill_draw(self):
+        """
+        Method to draw and select skills for the player.
 
+        :return: None
+        """
         if self.flag1:
             self.skill_list = []
             while len(self.skill_list) < 3:
@@ -292,6 +315,11 @@ class Zombio:
         self.skill_pick()
 
     def skill_pick(self):
+        """
+        Method to handle player's skill selection.
+
+        :return: None
+        """
         if self.left:
             self.left = False
             self.skills.sprites()[0].selected = True
@@ -318,6 +346,11 @@ class Zombio:
             self.flag1 = True
 
     def skill_lottery(self):
+        """
+        Method to randomly select a skill.
+
+        :return: A string representing the chosen skill
+        """
         i = random.randint(1, 9)
         if i == 1:
             return "ranged_weapon"
@@ -339,6 +372,11 @@ class Zombio:
             return "atk_speed"
 
     def nearest_enemy(self):
+        """
+        Method to find the nearest enemy to the player.
+
+        :return: Tuple containing the closest enemy object and its distance
+        """
         closest_enemy = None
         closest_distance = float('inf')
 
@@ -353,6 +391,12 @@ class Zombio:
         return closest_enemy, closest_distance
 
     def update_grid(self):
+        """
+        Method updates enemies position on map grid
+
+        :return: None
+
+        """
         grid = defaultdict(list)
         for enemy in self.enemies:
             tile_pos = enemy.tile_position(enemy.rect.center)
@@ -360,10 +404,21 @@ class Zombio:
         return grid
 
     def collision(self):
+        """
+        Method responsible for checking selected collisions.
+
+        :return: None
+
+        """
         for bullet in self.bullets:
             bullet.collision(self.enemies, self.player.damage, self.player)
         for bullet in self.enemy_attacks:
             bullet.check_collision(self.player)
+
+    def make_particles(self):
+        if len(self.particles) < 30 and not self.player.not_moving:
+            for i in range(5):
+                Particle((self.player.rect.x + 16, self.player.rect.y + 50), self.particles)
 
     def update_objects(self) -> None:  # Temporary different approach in future
         """
@@ -392,6 +447,9 @@ class Zombio:
         self.spawn_range.rect.center = self.player.rect.center
         self.health_bar.update()
         self.exp_bar.update()
+        self.make_particles()
+        for particle in self.particles:
+            particle.update()
 
     def update_screen(self) -> None:
         """
@@ -442,6 +500,11 @@ class Zombio:
         self.clock.tick(60)
 
     def update_menu(self):
+        """
+        Method responsible for updating menu.
+
+        :return: None
+        """
 
         self.screen.blit(MENU_IMAGE, (0, 0))
         self.screen.blit(self.overlay, (0, 0))

@@ -58,7 +58,6 @@ class Melee(Object):
             **kwargs: Arbitrary keyword arguments.
         """
         current_time = pygame.time.get_ticks()
-        # If the melee attack has been active for more than 250ms and has dealt damage, it is removed
         if current_time - self.creation_time >= 250 and self.deal_damage:
             self.kill()
 
@@ -73,7 +72,6 @@ class Melee(Object):
         Returns:
             float: The angle between the player and the enemy.
         """
-        # Calculate the angle between the player and the enemy
         dx = enemy_pos[0] - player_pos[0]
         dy = enemy_pos[1] - player_pos[1]
         return pygame.math.Vector2(dx, dy).angle_to(pygame.math.Vector2(1, 0))
